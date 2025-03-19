@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRC Simulation Visualization</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        .network-visualization {
+            position: relative;
+            height: 250px;
+            margin: 30px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px dashed #ccc;
+        }
+
+        .node {
+            width: 120px;
+            height: 120px;
+            background-color: #3498db;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .node-sender {
+            background-color: #2ecc71;
+        }
+
+        .node-receiver {
+            background-color: #e74c3c;
+        }
+
+        .node-label {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .node-address {
+            font-size: 12px;
+        }
+
+        .packet {
+            position: absolute;
+            width: 40px;
+            height: 25px;
+            background-color: #f1c40f;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 12px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: left 2s ease-in-out;
+            color: #333;
+        }
+
+        .packet-error {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .log-container {
+            margin-top: 30px;
+            height: 250px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .log-entry {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            font-family: monospace;
+        }
+
+        .log-entry-error {
+            background-color: #ffecec;
+            color: #e74c3c;
+        }
+
+        .log-entry-success {
+            background-color: #efffec;
+            color: #2ecc71;
+        }
+
+        .crc-details {
+            display: flex;
+            margin-top: 20px;
+            gap: 20px;
+        }
+
+        .crc-panel {
+            flex: 1;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .crc-panel h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 8px;
+        }
+
+        .crc-match {
+            color: #2ecc71;
+            font-weight: bold;
+        }
+
+        .crc-error {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .controls {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #eee;
+            border-radius: 5px;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 8px 16px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .bit-visualization {
+            display: flex;
+            margin-top: 10px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .bit {
+            width: 20px;
+            height: 20px;
+            margin-right: 2px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: monospace;
+            font-size: 12px;
+            background-color: #ddd;
+        }
+
+        .bit-0 {
+            background-color: #a5d6f7;
+        }
+
+        .bit-1 {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .bit-error {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .connection {
+            position: absolute;
+            height: 2px;
+            background-color: #3498db;
+            top: 50%;
+            left: 120px;
+            right: 120px;
+        }
+
+        .error-indicator {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background-color: #e74c3c;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 768px) {
+            .crc-details {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CRC-32 Simulation Visualization</h1>
+
+        <div class="controls">
+            <button id="startSimulation">Start New Simulation</button>
+            <button id="clearLogs">Clear Logs</button>
+            <div id="connection-status" style="margin-left: auto; padding: 8px; font-weight: bold;">Disconnected</div>
+        </div>
+
+        <div class="network-visualization">
+            <div class="connection"></div>
+            <div class="node node-sender" id="sender-node">
+                <div class="node-label">Sender</div>
+                <div class="node-address" id="sender-ip">192.168.1.1</div>
+            </div>
+            <div class="node node-receiver" id="receiver-node">
+                <div class="node-label">Receiver</div>
+                <div class="node-address" id="receiver-ip">192.168.1.2</div>
+            </div>
+        </div>
+
+        <div class="crc-details">
+            <div class="crc-panel">
+                <h3>Original Message</h3>
+                <div id="original-message">Waiting for transmission...</div>
+                <h4>CRC Calculation:</h4>
+                <div id="original-crc">-</div>
+                <div class="bit-visualization" id="original-bits"></div>
+            </div>
+            <div class="crc-panel">
+                <h3>Received Message</h3>
+                <div id="received-message">Waiting for reception...</div>
+                <h4>CRC Verification:</h4>
+                <div id="received-crc">-</div>
+                <div class="bit-visualization" id="received-bits"></div>
+                <div id="crc-result"></div>
+            </div>
+        </div>
+
+        <div class="log-container" id="logs">
+            <div class="log-entry">System initialized. Waiting for packets...</div>
+        </div>
+    </div>
+
+    <script>
+        // WebSocket connection
+        let socket;
+        let packetCounter = 0;
+        let errorInjected = false;
+        let errorPosition = null;
+
+        function connectWebSocket() {
+            socket = new WebSocket('ws://localhost:8000');
+            const statusElement = document.getElementById('connection-status');
+
+            socket.onopen = function() {
+                statusElement.textContent = 'Connected';
+                statusElement.style.color = '#2ecc71';
+                addLog('Connected to simulation server', 'success');
+            };
+
+            socket.onclose = function() {
+                statusElement.textContent = 'Disconnected';
+                statusElement.style.color = '#e74c3c';
+                addLog('Disconnected from simulation server', 'error');
+                setTimeout(connectWebSocket, 2000); // Try to reconnect
+            };
+
+            socket.onerror = function(error) {
+                statusElement.textContent = 'Error';
+                statusElement.style.color = '#e74c3c';
+                addLog('WebSocket error: ' + error.message, 'error');
+            };
+
+            socket.onmessage = function(event) {
+                try {
+                    const message = JSON.parse(event.data);
+                    handleSimulationEvent(message);
+                } catch (e) {
+                    addLog('Error parsing message: ' + e.message, 'error');
+                }
+            };
+        }
+
+        // Handle simulation events from NS-3
+        function handleSimulationEvent(event) {
+            console.log('Received event:', event);
+            
+            switch(event.type) {
+                case 'start':
+                    addLog('Simulation started', 'success');
+                    break;
+                    
+                case 'end':
+                    addLog('Simulation completed', 'success');
+                    break;
+                    
+                case 'network':
+                    updateNetworkVisualization(event.data);
+                    break;
+                    
+                case 'original':
+                    updateOriginalMessage(event.data);
+                    break;
+                    
+                case 'error':
+                    errorInjected = true;
+                    errorPosition = event.data;
+                    addLog(`Error injected at bit position: ${errorPosition.position} (Byte: ${errorPosition.byte}, Bit: ${errorPosition.bit})`, 'error');
+                    showErrorIndicator(errorPosition);
+                    break;
+                    
+                case 'transmission':
+                    showPacketTransmission();
+                    break;
+                    
+                case 'received':
+                    updateReceivedMessage(event.data);
+                    break;
+                    
+                default:
+                    addLog('Unknown event: ' + event.type);
+            }
+        }
+
+        function updateNetworkVisualization(data) {
+            if (data.nodes && data.nodes.length >= 2) {
+                document.getElementById('sender-ip').textContent = data.nodes[0].ip;
+                document.getElementById('receiver-ip').textContent = data.nodes[1].ip;
+            }
+            
+            if (data.link) {
+                addLog(`Network setup: ${data.link.dataRate} link with ${data.link.delay} delay`);
+            }
+        }
+
+        function updateOriginalMessage(data) {
+            document.getElementById('original-message').textContent = data.message;
+            document.getElementById('original-crc').textContent = data.crc;
+            
+            // Visualize binary data
+            const bitsContainer = document.getElementById('original-bits');
+            bitsContainer.innerHTML = '';
+            
+            if (data.binaryData) {
+                const bits = data.binaryData.replace(/\s/g, '');
+                for (let i = 0; i < bits.length; i++) {
+                    const bit = document.createElement('div');
+                    bit.className = `bit bit-${bits[i]}`;
+                    bit.textContent = bits[i];
+                    bitsContainer.appendChild(bit);
+                    
+                    // Add space between bytes
+                    if ((i + 1) % 8 === 0 && i < bits.length - 1) {
+                        const spacer = document.createElement('div');
+                        spacer.style.width = '5px';
+                        bitsContainer.appendChild(spacer);
+                    }
+                }
+            }
+            
+            addLog(`Original message: "${data.message}" with CRC: ${data.crc}`);
+        }
+
+        function updateReceivedMessage(data) {
+            document.getElementById('received-message').textContent = data.message;
+            document.getElementById('received-crc').textContent = 
+                `Received: ${data.receivedCRC}, Computed: ${data.computedCRC}`;
+            
+            // Visualize binary data with error highlight
+            const bitsContainer = document.getElementById('received-bits');
+            bitsContainer.innerHTML = '';
+            
+            if (data.binaryData) {
+                const bits = data.binaryData.replace(/\s/g, '');
+                for (let i = 0; i < bits.length; i++) {
+                    const bit = document.createElement('div');
+                    
+                    // Highlight error bit if we know its position
+                    if (errorInjected && errorPosition && 
+                        i === errorPosition.byte * 8 + (7 - errorPosition.bit)) {
+                        bit.className = 'bit bit-error';
+                    } else {
+                        bit.className = `bit bit-${bits[i]}`;
+                    }
+                    
+                    bit.textContent = bits[i];
+                    bitsContainer.appendChild(bit);
+                    
+                    // Add space between bytes
+                    if ((i + 1) % 8 === 0 && i < bits.length - 1) {
+                        const spacer = document.createElement('div');
+                        spacer.style.width = '5px';
+                        bitsContainer.appendChild(spacer);
+                    }
+                }
+            }
+            
+            // Update CRC result
+            const resultElement = document.getElementById('crc-result');
+            if (data.crcMatch) {
+                resultElement.innerHTML = `<div class="crc-match">✓ CRC MATCH - No errors detected</div>`;
+                addLog(`Packet received successfully. CRC validation passed.`, 'success');
+            } else {
+                resultElement.innerHTML = `<div class="crc-error">⚠ CRC MISMATCH - Error detected!</div>`;
+                addLog(`Packet has errors. CRC validation failed.`, 'error');
+            }
+            
+            // Reset error state
+            errorInjected = false;
+            errorPosition = null;
+        }
+
+        function showPacketTransmission() {
+            const packet = document.createElement('div');
+            packetCounter++;
+
+            packet.className = 'packet';
+            packet.id = 'packet-' + packetCounter;
+            packet.textContent = '#' + packetCounter;
+            packet.style.left = '120px';
+            packet.style.top = '50%';
+            packet.style.transform = 'translate(0, -50%)';
+
+            if (errorInjected) {
+                packet.classList.add('packet-error');
+            }
+
+            document.querySelector('.network-visualization').appendChild(packet);
+            
+            addLog(`Transmitting packet #${packetCounter}...`);
+
+            // Animate packet movement
+            setTimeout(() => {
+                packet.style.left = 'calc(100% - 160px)';
+            }, 100);
+
+            // Remove packet after animation
+            setTimeout(() => {
+                packet.remove();
+            }, 2100);
+        }
+
+        function showErrorIndicator(errorData) {
+            // Remove any existing error indicators
+            const existingIndicators = document.querySelectorAll('.error-indicator');
+            existingIndicators.forEach(el => el.remove());
+            
+            // Create error indicator
+            const indicator = document.createElement('div');
+            indicator.className = 'error-indicator';
+            indicator.textContent = '!';
+            indicator.style.left = 'calc(50% - 12px)';
+            indicator.style.top = 'calc(50% - 12px)';
+            
+            document.querySelector('.network-visualization').appendChild(indicator);
+            
+            // Remove after some time
+            setTimeout(() => {
+                indicator.remove();
+            }, 5000);
+        }
+
+        // Add log message
+        function addLog(message, type = '') {
+            const logContainer = document.getElementById('logs');
+            const logEntry = document.createElement('div');
+
+            logEntry.className = 'log-entry';
+            if (type === 'error') {
+                logEntry.className += ' log-entry-error';
+            } else if (type === 'success') {
+                logEntry.className += ' log-entry-success';
+            }
+
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        // Button event handlers
+        document.getElementById('startSimulation').addEventListener('click', function() {
+            fetch('http://localhost:8000/update-data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    type: 'command',
+                    data: 'start'
+                })
+            }).then(response => {
+                addLog('Sent start command to NS-3 simulation');
+            }).catch(error => {
+                addLog('Error sending start command: ' + error.message, 'error');
+            });
+        });
+
+        document.getElementById('clearLogs').addEventListener('click', function() {
+            document.getElementById('logs').innerHTML = '';
+            addLog('Logs cleared');
+        });
+
+        // Connect to WebSocket server
+        connectWebSocket();
+    </script>
+</body>
+</html>
