@@ -8,6 +8,12 @@
 #include <iostream>
 #include <bitset>
 #include <random>
+#include <fstream>
+#include <sstream>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 using namespace ns3;
 using namespace std;
@@ -31,7 +37,7 @@ const uint32_t Crc32Table[256] = {
     0x4369E96A, 0x346ED9FC, 0xAD678846, 0xDA60B8D0, 0x44042D73, 0x33031DE5, 0xAA0A4C5F, 0xDD0D7CC9,
     0x5005713C, 0x270241AA, 0xBE0B1010, 0xC90C2086, 0x5768B525, 0x206F85B3, 0xB966D409, 0xCE61E49F,
     0x5EDEF90E, 0x29D9C998, 0xB0D09822, 0xC7D7A8B4, 0x59B33D17, 0x2EB40D81, 0xB7BD5C3B, 0xC0BA6CAD,
- 0xEDB88320, 0x9ABFB3B6, 0x03B6E20C, 0x74B1D29A, 0xEAD54739, 0x9DD277AF, 0x04DB2615, 0x73DC1683,
+    0xEDB88320, 0x9ABFB3B6, 0x03B6E20C, 0x74B1D29A, 0xEAD54739, 0x9DD277AF, 0x04DB2615, 0x73DC1683,
     0xE3630B12, 0x94643B84, 0x0D6D6A3E, 0x7A6A5AA8, 0xE40ECF0B, 0x9309FF9D, 0x0A00AE27, 0x7D079EB1,
     0xF00F9344, 0x8708A3D2, 0x1E01F268, 0x6906C2FE, 0xF762575D, 0x806567CB, 0x196C3671, 0x6E6B06E7,
     0xFED41B76, 0x89D32BE0, 0x10DA7A5A, 0x67DD4ACC, 0xF9B9DF6F, 0x8EBEEFF9, 0x17B7BE43, 0x60B08ED5,
@@ -46,7 +52,43 @@ const uint32_t Crc32Table[256] = {
     0xA00AE278, 0xD70DD2EE, 0x4E048354, 0x3903B3C2, 0xA7672661, 0xD06016F7, 0x4969474D, 0x3E6E77DB,
     0xAED16A4A, 0xD9D65ADC, 0x40DF0B66, 0x37D83BF0, 0xA9BCAE53, 0xDEBB9EC5, 0x47B2CF7F, 0x30B5FFE9,
     0xBDBDF21C, 0xCABAC28A, 0x53B39330, 0x24B4A3A6, 0xBAD03605, 0xCDD70693, 0x54DE5729, 0x23D967BF,
- 0xB3667A2E, 0xC4614AB8, 0x5D681B02, 0x2A6F2B94, 0xB40BBE37, 0xC30C8EA1, 0x5A05DF1B,0x2D02EF8D};
+    0xB3667A2E, 0xC4614AB8, 0x5D681B02, 0x2A6F2B94, 0xB40BBE37, 0xC30C8EA1, 0x5A05DF1B, 0x2D02EF8D
+};
+
+// Function to send data to websocket server
+void SendToWebSocket(const string& messageType, const string& data) {
+    std::cout << "Sending to WebSocket: Type=" << messageType << ", Data=" << data << std::endl;
+
+    // Format the data as JSON if it's not already
+    std::string payload;
+    if (data.find('{') == 0) {
+        // Data is already JSON
+        payload = "{\"type\":\"" + messageType + "\",\"data\":" + data + "}";
+    } else {
+        // Create JSON with message type and data
+        payload = "{\"type\":\"" + messageType + "\",\"data\":\"" + data + "\"}";
+    }
+
+    // Create the curl command with proper escaping
+    std::string escapedPayload = payload;
+    // Replace single quotes with escaped single quotes
+    size_t pos = 0;
+    while ((pos = escapedPayload.find("'", pos)) != std::string::npos) {
+        escapedPayload.replace(pos, 1, "\\'");
+        pos += 2;
+    }
+
+    std::string command = "curl -s -X POST -H \"Content-Type: application/json\" -d '" +
+                           escapedPayload + "' http://localhost:8000/update-data";
+    std::cout << "Executing: " << command << std::endl;
+
+    // Execute the command and capture the result
+    int result = system(command.c_str());
+
+    if (result != 0) {
+        std::cerr << "Error sending data to WebSocket server. Result code: " << result << std::endl;
+    }
+}
 // Optimized CRC-32 computation using LUT
 uint32_t ComputeCrc(const vector<uint8_t> &data) {
     uint32_t crc = 0xFFFFFFFF;
@@ -54,6 +96,15 @@ uint32_t ComputeCrc(const vector<uint8_t> &data) {
         crc = (crc >> 8) ^ Crc32Table[(crc ^ byte) & 0xFF];
     }
     return crc ^ 0xFFFFFFFF;
+}
+
+// Convert data to binary string representation for visualization
+string ToBinaryString(const vector<uint8_t>& data) {
+    string result;
+    for (uint8_t byte : data) {
+        result += bitset<8>(byte).to_string() + " ";
+    }
+    return result;
 }
 
 // Function to introduce a random error
@@ -69,6 +120,16 @@ void InjectError(vector<uint8_t> &data, uint32_t &errorBit) {
 
     NS_LOG_WARN("⚠️ Error injected at bit position: " << errorBit
                  << " (Byte: " << bytePos << ", Bit: " << bitPos << ")");
+
+    // Send error information to the web interface
+    stringstream ss;
+    ss << "{\"position\":" << errorBit
+       << ",\"byte\":" << bytePos
+       << ",\"bit\":" << bitPos
+       << ",\"originalByte\":\"" << bitset<8>(data[bytePos] ^ (1 << bitPos)).to_string()
+       << "\",\"modifiedByte\":\"" << bitset<8>(data[bytePos]).to_string() << "\"}";
+
+    SendToWebSocket("error", ss.str());
 }
 
 // Receiver callback
@@ -87,28 +148,55 @@ void ReceivePacket(Ptr<Socket> socket) {
                                     receivedData[receivedData.size()-1];
 
         // Remove CRC from payload
-        receivedData.resize(receivedData.size() - 4);
-        uint32_t computedChecksum = ComputeCrc(receivedData);
+        vector<uint8_t> payloadData = receivedData;
+        payloadData.resize(receivedData.size() - 4);
+        uint32_t computedChecksum = ComputeCrc(payloadData);
 
-        string receivedMessage(receivedData.begin(), receivedData.end());
+        string receivedMessage(payloadData.begin(), payloadData.end());
 
         NS_LOG_INFO("📩 Received Payload: " << receivedMessage);
         NS_LOG_INFO("📌 Received CRC: 0x" << std::hex << std::uppercase << receivedChecksum);
         NS_LOG_INFO("🔍 Computed CRC: 0x" << std::hex << std::uppercase << computedChecksum);
 
-        if (receivedChecksum == computedChecksum) {
+        bool crcMatch = (receivedChecksum == computedChecksum);
+
+        if (crcMatch) {
             NS_LOG_INFO("✅ CRC MATCH - No errors detected.");
         } else {
             NS_LOG_WARN("❌ CRC MISMATCH - Error detected in received payload!");
         }
+
+        // Send received data to web interface
+        stringstream ss;
+        ss << "{\"message\":\"" << receivedMessage
+           << "\",\"receivedCRC\":\"0x" << std::hex << std::uppercase << receivedChecksum
+           << "\",\"computedCRC\":\"0x" << std::hex << std::uppercase << computedChecksum
+           << "\",\"crcMatch\":" << (crcMatch ? "true" : "false")
+           << ",\"binaryData\":\"" << ToBinaryString(payloadData)
+           << "\",\"binaryCRC\":\"" << bitset<32>(receivedChecksum).to_string() << "\"}";
+
+        SendToWebSocket("received", ss.str());
     }
 }
 
 int main(int argc, char* argv[]) {
     CommandLine cmd;
+    bool useWebInterface = true;
+    cmd.AddValue("web", "Use Web Interface", useWebInterface);
     cmd.Parse(argc, argv);
 
     LogComponentEnable("CsmaCrcSimulation", LOG_LEVEL_INFO);
+
+    // Clear previous simulation data
+    if (useWebInterface) {
+        ofstream outFile;
+        outFile.open("~/crc-visualization/simulation-data.json", ios::trunc);
+        outFile << "[]" << endl;
+        outFile.close();
+
+        // Notify web server about simulation start
+        SendToWebSocket("start", "{\"status\":\"started\"}");
+    }
 
     // Get user input
     cout << "Enter a paragraph to send: ";
@@ -121,6 +209,17 @@ int main(int argc, char* argv[]) {
 
     vector<uint8_t> payload(input.begin(), input.end());
     uint32_t crc = ComputeCrc(payload);
+
+    // Send original data to web interface
+    if (useWebInterface) {
+        stringstream ss;
+        ss << "{\"message\":\"" << input
+           << "\",\"crc\":\"0x" << std::hex << std::uppercase << crc
+           << "\",\"binaryData\":\"" << ToBinaryString(payload)
+           << "\",\"binaryCRC\":\"" << bitset<32>(crc).to_string() << "\"}";
+
+        SendToWebSocket("original", ss.str());
+    }
 
     // Append CRC to payload
     payload.push_back((crc >> 24) & 0xFF);
@@ -162,16 +261,39 @@ int main(int argc, char* argv[]) {
     receiverSocket->Bind(InetSocketAddress(Ipv4Address::GetAny(), 8080));
     receiverSocket->SetRecvCallback(MakeCallback(&ReceivePacket));
 
+    // Send visualization data about network setup
+    if (useWebInterface) {
+        stringstream ss;
+        ss << "{\"nodes\":["
+           << "{\"id\":0,\"type\":\"sender\",\"ip\":\"" << interfaces.GetAddress(0) << "\"},"
+           << "{\"id\":1,\"type\":\"receiver\",\"ip\":\"" << interfaces.GetAddress(1) << "\"}"
+           << "],\"link\":{\"dataRate\":\"100Mbps\",\"delay\":\"6.56μs\"}}";
+
+        SendToWebSocket("network", ss.str());
+    }
+
     // Send Packet
     Simulator::Schedule(Seconds(1.0), [&]() {
         Ptr<Packet> packet = Create<Packet>(payload.data(), payload.size());
         senderSocket->Send(packet);
         NS_LOG_INFO("🚀 Sent Payload: " << input);
         NS_LOG_INFO("📌 Sent CRC: 0x" << std::hex << std::uppercase << crc);
+
+        // Send transmission event to web interface
+        if (useWebInterface) {
+            stringstream ss;
+            ss << "{\"status\":\"sent\",\"timestamp\":" << Simulator::Now().GetSeconds() << "}";
+            SendToWebSocket("transmission", ss.str());
+        }
     });
 
     Simulator::Run();
     Simulator::Destroy();
+
+    // Notify web server about simulation end
+    if (useWebInterface) {
+        SendToWebSocket("end", "{\"status\":\"completed\"}");
+    }
 
     return 0;
 }
