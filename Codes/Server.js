@@ -10,7 +10,18 @@ const path = require('path');
 // Initialize express app
 const app = express();
 app.use(cors());
-app.use(bodyParser.json());
+
+// Configure body-parser to handle both JSON and text
+app.use(bodyParser.json({
+  verify: (req, res, buf) => {
+    try {
+      JSON.parse(buf);
+    } catch (e) {
+      // If JSON parsing fails, store the raw buffer for later processing
+      req.rawBody = buf.toString();
+    }
+  }
+}));
 app.use(bodyParser.text());
 app.use(express.static(path.join(__dirname)));
 
@@ -49,9 +60,43 @@ app.post('/update-data', (req, res) => {
     try {
         // Parse the incoming data
         let data;
-        if (typeof req.body === 'string') {
-            data = JSON.parse(req.body);
-        } else {
+        
+        // If we have raw body (from failed JSON parsing)
+        if (req.rawBody) {
+            // Try to extract JSON from the string
+            const jsonMatch = req.rawBody.match(/\{.*\}/s);
+            if (jsonMatch) {
+                try {
+                    data = JSON.parse(jsonMatch[0]);
+                } catch (e) {
+                    console.error('Error parsing extracted JSON:', e);
+                    return res.status(400).send({ status: 'error', message: 'Invalid JSON format' });
+                }
+            } else {
+                return res.status(400).send({ status: 'error', message: 'No valid JSON found in request' });
+            }
+        } 
+        // If we have a string body
+        else if (typeof req.body === 'string') {
+            try {
+                data = JSON.parse(req.body);
+            } catch (parseError) {
+                console.error('Error parsing JSON string:', parseError);
+                // Try to extract JSON from the string
+                const jsonMatch = req.body.match(/\{.*\}/s);
+                if (jsonMatch) {
+                    try {
+                        data = JSON.parse(jsonMatch[0]);
+                    } catch (e) {
+                        return res.status(400).send({ status: 'error', message: 'Invalid JSON format' });
+                    }
+                } else {
+                    return res.status(400).send({ status: 'error', message: 'No valid JSON found in request' });
+                }
+            }
+        } 
+        // If we have a parsed JSON object
+        else {
             data = req.body;
         }
         
