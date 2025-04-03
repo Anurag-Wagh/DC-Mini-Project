@@ -10,21 +10,25 @@
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f5f5f5;
+            background-color: #f0f2f5;
+            color: #333;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
             background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
             text-align: center;
             color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.2rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
 
         .network-visualization {
@@ -35,11 +39,14 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 2px dashed #ccc;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
         }
 
         .node {
-            width: 120px;
-            height: 120px;
+            width: 130px;
+            height: 130px;
             background-color: #3498db;
             border-radius: 50%;
             display: flex;
@@ -48,44 +55,50 @@
             align-items: center;
             color: white;
             font-weight: bold;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .node:hover {
+            transform: scale(1.05);
         }
 
         .node-sender {
-            background-color: #2ecc71;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
         }
 
         .node-receiver {
-            background-color: #e74c3c;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
         }
 
         .node-label {
-            font-size: 18px;
-            margin-bottom: 5px;
+            font-size: 20px;
+            margin-bottom: 8px;
         }
 
         .node-address {
-            font-size: 12px;
+            font-size: 14px;
+            opacity: 0.9;
         }
 
         .packet {
             position: absolute;
-            width: 40px;
-            height: 25px;
+            width: 45px;
+            height: 30px;
             background-color: #f1c40f;
-            border-radius: 5px;
+            border-radius: 6px;
             display: flex;
             justify-content: center;
             align-items: center;
             font-weight: bold;
-            font-size: 12px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            font-size: 14px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
             transition: left 2s ease-in-out;
             color: #333;
         }
 
         .packet-error {
-            background-color: #e74c3c;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
             color: white;
         }
 
@@ -94,15 +107,21 @@
             height: 250px;
             overflow-y: auto;
             border: 1px solid #ddd;
-            padding: 10px;
+            padding: 15px;
             background-color: #f9f9f9;
-            border-radius: 5px;
+            border-radius: 8px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .log-entry {
-            padding: 8px;
+            padding: 10px;
             border-bottom: 1px solid #eee;
             font-family: monospace;
+            transition: background-color 0.2s;
+        }
+
+        .log-entry:hover {
+            background-color: #f0f0f0;
         }
 
         .log-entry-error {
@@ -123,69 +142,94 @@
 
         .crc-panel {
             flex: 1;
-            padding: 15px;
+            padding: 20px;
             border: 1px solid #ddd;
-            border-radius: 5px;
+            border-radius: 8px;
             background-color: #f9f9f9;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .crc-panel:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
         .crc-panel h3 {
             margin-top: 0;
             color: #2c3e50;
             border-bottom: 1px solid #ddd;
-            padding-bottom: 8px;
+            padding-bottom: 10px;
+            font-size: 1.3rem;
         }
 
         .crc-match {
             color: #2ecc71;
             font-weight: bold;
+            font-size: 1.1rem;
         }
 
         .crc-error {
             color: #e74c3c;
             font-weight: bold;
+            font-size: 1.1rem;
         }
 
         .controls {
             margin: 20px 0;
             padding: 15px;
-            background-color: #eee;
-            border-radius: 5px;
+            background-color: #f0f2f5;
+            border-radius: 8px;
             display: flex;
-            gap: 10px;
+            gap: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
         button {
-            padding: 8px 16px;
+            padding: 10px 20px;
             background-color: #3498db;
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 15px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         button:hover {
             background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
 
         .bit-visualization {
             display: flex;
-            margin-top: 10px;
+            margin-top: 15px;
             overflow-x: auto;
-            padding-bottom: 10px;
+            padding-bottom: 15px;
+            background-color: #f0f0f0;
+            border-radius: 6px;
+            padding: 10px;
         }
 
         .bit {
-            width: 20px;
-            height: 20px;
-            margin-right: 2px;
+            width: 25px;
+            height: 25px;
+            margin-right: 3px;
             display: flex;
             justify-content: center;
             align-items: center;
             font-family: monospace;
-            font-size: 12px;
+            font-size: 14px;
             background-color: #ddd;
+            border-radius: 4px;
+            transition: transform 0.2s;
+        }
+
+        .bit:hover {
+            transform: scale(1.1);
         }
 
         .bit-0 {
@@ -198,69 +242,96 @@
         }
 
         .bit-error {
-            background-color: #e74c3c;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
             color: white;
+            animation: pulse 1.5s infinite;
         }
 
         .connection {
             position: absolute;
-            height: 2px;
-            background-color: #3498db;
+            height: 3px;
+            background: linear-gradient(to right, #2ecc71, #3498db, #e74c3c);
             top: 50%;
             left: 120px;
             right: 120px;
+            border-radius: 3px;
         }
 
         .error-indicator {
             position: absolute;
-            width: 24px;
-            height: 24px;
-            background-color: #e74c3c;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
             color: white;
             font-weight: bold;
-            font-size: 16px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            font-size: 18px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
             z-index: 10;
             animation: pulse 1s infinite;
         }
         /*extra style*/
 
          #performance-metrics {
-            margin-top: 10px;
+            margin-top: 15px;
         }
         #performance-table {
             width: 100%;
             border-collapse: collapse;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            overflow: hidden;
         }
         #performance-table th,
         #performance-table td {
             border: 1px solid #ddd;
-            padding: 8px;
+            padding: 12px;
             text-align: center;
         }
         #performance-table th {
             background-color: #f2f2f2;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        #performance-table tr:hover {
+            background-color: #f5f5f5;
         }
 
         /* New chart container styles */
         .chart-container {
             display: flex;
             justify-content: space-between;
-            margin-top: 20px;
+            margin-top: 25px;
+            gap: 20px;
         }
         .chart-wrapper {
             width: 48%;
             height: 300px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
         #comparative-analysis {
-            margin-top: 20px;
-            padding: 10px;
+            margin-top: 25px;
+            padding: 20px;
             background-color: #f9f9f9;
-            border-radius: 5px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        #comparative-analysis h4 {
+            color: #2c3e50;
+            margin-top: 0;
+            font-size: 1.2rem;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        #comparative-analysis p {
+            margin: 10px 0;
+            font-size: 1.1rem;
         }
 
         @keyframes pulse {
@@ -272,6 +343,12 @@
         @media (max-width: 768px) {
             .crc-details {
                 flex-direction: column;
+            }
+            .chart-container {
+                flex-direction: column;
+            }
+            .chart-wrapper {
+                width: 100%;
             }
         }
     </style>
@@ -325,7 +402,8 @@
                     <tr>
                         <th>CRC Type</th>
                         <th>Execution Time (ns)</th>
-                        <th>Hamming Distance</th>
+                        <th>Error Detection Rate</th>
+                        <th>Data Overhead (%)</th>
                         <th>Error Detection</th>
                     </tr>
                 </thead>
@@ -339,7 +417,13 @@
                 <canvas id="executionTimeChart"></canvas>
             </div>
             <div class="chart-wrapper">
-                <canvas id="hammingDistanceChart"></canvas>
+                <canvas id="errorDetectionRateChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <div class="chart-wrapper">
+                <canvas id="dataOverheadChart"></canvas>
             </div>
         </div>
 
@@ -361,7 +445,8 @@
         let errorPosition = null;
            // Store chart instances
          let executionTimeChart = null;
-        let hammingDistanceChart = null;
+        let errorDetectionRateChart = null;
+        let dataOverheadChart = null;
 
         function connectWebSocket() {
             socket = new WebSocket('ws://localhost:8000');
@@ -405,6 +490,8 @@
                     updatePerformanceMetrics(event.data);
                     break;
                 case 'start':
+                    // Clear previous data when simulation starts
+                    clearPreviousData();
                     addLog('Simulation started', 'success');
                     break;
 
@@ -497,6 +584,7 @@
                     if (errorInjected && errorPosition &&
                         i === errorPosition.byte * 8 + (7 - errorPosition.bit)) {
                         bit.className = 'bit bit-error';
+                        bit.title = `Error at bit position: ${errorPosition.position}`;
                     } else {
                         bit.className = `bit bit-${bits[i]}`;
                     }
@@ -582,7 +670,8 @@
         function updateCharts(data) {
             const crcTypes = [];
             const executionTimes = [];
-            const hammingDistances = [];
+            const errorDetectionRates = [];
+            const dataOverheads = [];
 
             // Collect all current table data
             const tableRows = document.querySelectorAll('#performance-body tr');
@@ -590,7 +679,8 @@
                 const cells = row.getElementsByTagName('td');
                 crcTypes.push(cells[0].textContent);
                 executionTimes.push(parseFloat(cells[1].textContent));
-                hammingDistances.push(parseFloat(cells[2].textContent));
+                errorDetectionRates.push(parseFloat(cells[2].textContent));
+                dataOverheads.push(parseFloat(cells[3].textContent));
             });
 
             // Execution Time Chart
@@ -603,13 +693,50 @@
                         datasets: [{
                             label: 'Execution Time (ns)',
                             data: executionTimes,
-                            backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 99, 132, 0.6)', 'rgba(54, 162, 235, 0.6)']
+                            backgroundColor: [
+                                'rgba(46, 204, 113, 0.7)',
+                                'rgba(52, 152, 219, 0.7)',
+                                'rgba(155, 89, 182, 0.7)'
+                            ],
+                            borderColor: [
+                                'rgba(46, 204, 113, 1)',
+                                'rgba(52, 152, 219, 1)',
+                                'rgba(155, 89, 182, 1)'
+                            ],
+                            borderWidth: 1
                         }]
                     },
                     options: {
                         responsive: true,
                         plugins: {
-                            title: { display: true, text: 'Execution Time Comparison' }
+                            title: { 
+                                display: true, 
+                                text: 'Execution Time Comparison',
+                                font: {
+                                    size: 16,
+                                    weight: 'bold'
+                                }
+                            },
+                            legend: {
+                                labels: {
+                                    font: {
+                                        size: 14
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
                         }
                     }
                 });
@@ -619,49 +746,153 @@
                 executionTimeChart.update();
             }
 
-            // Hamming Distance Chart
-            if (!hammingDistanceChart) {
-                const ctx = document.getElementById('hammingDistanceChart').getContext('2d');
-                hammingDistanceChart = new Chart(ctx, {
+            // Error Detection Rate Chart
+            if (!errorDetectionRateChart) {
+                const ctx = document.getElementById('errorDetectionRateChart').getContext('2d');
+                errorDetectionRateChart = new Chart(ctx, {
                     type: 'bar',
                     data: {
                         labels: crcTypes,
                         datasets: [{
-                            label: 'Hamming Distance',
-                            data: hammingDistances,
-                            backgroundColor: ['rgba(255, 206, 86, 0.6)', 'rgba(75, 192, 192, 0.6)', 'rgba(153, 102, 255, 0.6)']
+                            label: 'Error Detection Rate',
+                            data: errorDetectionRates,
+                            backgroundColor: [
+                                'rgba(241, 196, 15, 0.7)',
+                                'rgba(230, 126, 34, 0.7)',
+                                'rgba(231, 76, 60, 0.7)'
+                            ],
+                            borderColor: [
+                                'rgba(241, 196, 15, 1)',
+                                'rgba(230, 126, 34, 1)',
+                                'rgba(231, 76, 60, 1)'
+                            ],
+                            borderWidth: 1
                         }]
                     },
                     options: {
                         responsive: true,
                         plugins: {
-                            title: { display: true, text: 'Hamming Distance Comparison' }
+                            title: { 
+                                display: true, 
+                                text: 'Error Detection Rate Comparison',
+                                font: {
+                                    size: 16,
+                                    weight: 'bold'
+                                }
+                            },
+                            legend: {
+                                labels: {
+                                    font: {
+                                        size: 14
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 1.0,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
                         }
                     }
                 });
             } else {
-                hammingDistanceChart.data.labels = crcTypes;
-                hammingDistanceChart.data.datasets[0].data = hammingDistances;
-                hammingDistanceChart.update();
+                errorDetectionRateChart.data.labels = crcTypes;
+                errorDetectionRateChart.data.datasets[0].data = errorDetectionRates;
+                errorDetectionRateChart.update();
+            }
+
+            // Data Overhead Chart
+            if (!dataOverheadChart) {
+                const ctx = document.getElementById('dataOverheadChart').getContext('2d');
+                dataOverheadChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: crcTypes,
+                        datasets: [{
+                            label: 'Data Overhead (%)',
+                            data: dataOverheads,
+                            backgroundColor: [
+                                'rgba(52, 73, 94, 0.7)',
+                                'rgba(41, 128, 185, 0.7)',
+                                'rgba(142, 68, 173, 0.7)'
+                            ],
+                            borderColor: [
+                                'rgba(52, 73, 94, 1)',
+                                'rgba(41, 128, 185, 1)',
+                                'rgba(142, 68, 173, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: { 
+                                display: true, 
+                                text: 'Data Overhead Comparison',
+                                font: {
+                                    size: 16,
+                                    weight: 'bold'
+                                }
+                            },
+                            legend: {
+                                labels: {
+                                    font: {
+                                        size: 14
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                dataOverheadChart.data.labels = crcTypes;
+                dataOverheadChart.data.datasets[0].data = dataOverheads;
+                dataOverheadChart.update();
             }
 
             // Update Comparative Analysis
-            updateComparativeAnalysis(crcTypes, executionTimes, hammingDistances);
+            updateComparativeAnalysis(crcTypes, executionTimes, errorDetectionRates, dataOverheads);
         }
            // New function for comparative analysis
-        function updateComparativeAnalysis(crcTypes, executionTimes, hammingDistances) {
+        function updateComparativeAnalysis(crcTypes, executionTimes, errorDetectionRates, dataOverheads) {
             const analysisContainer = document.getElementById('comparative-analysis');
 
             // Find best performers
             const minExecutionTimeIndex = executionTimes.indexOf(Math.min(...executionTimes));
-            const maxHammingDistanceIndex = hammingDistances.indexOf(Math.max(...hammingDistances));
+            const maxErrorDetectionRateIndex = errorDetectionRates.indexOf(Math.max(...errorDetectionRates));
+            const minDataOverheadIndex = dataOverheads.indexOf(Math.min(...dataOverheads));
 
             analysisContainer.innerHTML = `
                 <h4>Comparative Analysis</h4>
                 <p>🏆 Fastest CRC: <strong>${crcTypes[minExecutionTimeIndex]}</strong>
                    with ${executionTimes[minExecutionTimeIndex]} ns execution time</p>
-                <p>📊 Highest Hamming Distance: <strong>${crcTypes[maxHammingDistanceIndex]}</strong>
-                   with ${hammingDistances[maxHammingDistanceIndex]} distance</p>
+                <p>📊 Best Error Detection: <strong>${crcTypes[maxErrorDetectionRateIndex]}</strong>
+                   with ${(errorDetectionRates[maxErrorDetectionRateIndex] * 100).toFixed(2)}% detection rate</p>
+                <p>💾 Lowest Data Overhead: <strong>${crcTypes[minDataOverheadIndex]}</strong>
+                   with ${dataOverheads[minDataOverheadIndex].toFixed(2)}% overhead</p>
             `;
         }
 
@@ -673,7 +904,8 @@
             row.innerHTML = `
                 <td>${data.crcType}</td>
                 <td>${data.executionTime}</td>
-                <td>${data.hammingDistance}</td>
+                <td>${(data.errorDetectionRate * 100).toFixed(2)}%</td>
+                <td>${data.dataOverhead.toFixed(2)}%</td>
                 <td>${data.errorDetected ? '✓' : '✗'}</td>
             `;
 
@@ -700,8 +932,50 @@
             logContainer.scrollTop = logContainer.scrollHeight;
         }
 
+        // Function to clear previous data
+        function clearPreviousData() {
+            // Clear performance table
+            document.getElementById('performance-body').innerHTML = '';
+            
+            // Reset charts
+            if (executionTimeChart) {
+                executionTimeChart.destroy();
+                executionTimeChart = null;
+            }
+            
+            if (errorDetectionRateChart) {
+                errorDetectionRateChart.destroy();
+                errorDetectionRateChart = null;
+            }
+            
+            if (dataOverheadChart) {
+                dataOverheadChart.destroy();
+                dataOverheadChart = null;
+            }
+            
+            // Clear comparative analysis
+            document.getElementById('comparative-analysis').innerHTML = '';
+            
+            // Clear original and received message displays
+            document.getElementById('original-message').textContent = 'Waiting for transmission...';
+            document.getElementById('original-crc').textContent = '-';
+            document.getElementById('original-bits').innerHTML = '';
+            
+            document.getElementById('received-message').textContent = 'Waiting for reception...';
+            document.getElementById('received-crc').textContent = '-';
+            document.getElementById('received-bits').innerHTML = '';
+            document.getElementById('crc-result').innerHTML = '';
+            
+            // Clear logs
+            document.getElementById('logs').innerHTML = '';
+            addLog('Previous data cleared. New simulation started.', 'success');
+        }
+
         // Button event handlers
         document.getElementById('startSimulation').addEventListener('click', function() {
+            // Clear previous data before starting new simulation
+            clearPreviousData();
+            
             fetch('http://localhost:8000/update-data', {
                 method: 'POST',
                 headers: {
