@@ -145,22 +145,23 @@
             padding: 20px;
             border: 1px solid #ddd;
             border-radius: 8px;
-            background-color: #f9f9f9;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .crc-panel:hover {
             transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
 
         .crc-panel h3 {
             margin-top: 0;
             color: #2c3e50;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 2px solid #3498db;
             padding-bottom: 10px;
             font-size: 1.3rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
 
         .crc-match {
@@ -206,12 +207,22 @@
 
         .bit-visualization {
             display: flex;
+            flex-direction: column;
             margin-top: 15px;
-            overflow-x: auto;
-            padding-bottom: 15px;
+            padding: 10px;
             background-color: #f0f0f0;
             border-radius: 6px;
-            padding: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .bit-row {
+            display: flex;
+            margin-bottom: 5px;
+            padding: 2px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 4px;
         }
 
         .bit {
@@ -223,21 +234,23 @@
             align-items: center;
             font-family: monospace;
             font-size: 14px;
-            background-color: #ddd;
             border-radius: 4px;
-            transition: transform 0.2s;
+            transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .bit:hover {
             transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
         .bit-0 {
-            background-color: #a5d6f7;
+            background: linear-gradient(135deg, #a5d6f7, #3498db);
+            color: white;
         }
 
         .bit-1 {
-            background-color: #3498db;
+            background: linear-gradient(135deg, #3498db, #2980b9);
             color: white;
         }
 
@@ -351,6 +364,75 @@
                 width: 100%;
             }
         }
+
+        .crc-type-panel {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .crc-type-panel h4 {
+            margin: 0 0 15px 0;
+            color: #2c3e50;
+            font-size: 1.1rem;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+        }
+
+        .crc-type-panel .received-message {
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .crc-type-panel .crc-verification {
+            margin-bottom: 15px;
+            padding: 8px;
+            background-color: #edf2f7;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #2c3e50;
+        }
+
+        .crc-type-panel .bit-visualization {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 6px;
+            overflow-x: auto;
+            white-space: nowrap;
+            scrollbar-width: thin;
+            scrollbar-color: #3498db #f0f0f0;
+        }
+
+        .crc-type-panel .crc-result {
+            margin-top: 10px;
+        }
+
+        .crc-match {
+            padding: 10px;
+            background-color: #e8f5e9;
+            border-radius: 6px;
+            color: #2e7d32;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .crc-error {
+            padding: 10px;
+            background-color: #ffebee;
+            border-radius: 6px;
+            color: #c62828;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
     </style>
 </head>
 <body>
@@ -379,17 +461,38 @@
             <div class="crc-panel">
                 <h3>Original Message</h3>
                 <div id="original-message">Waiting for transmission...</div>
-                <h4>CRC Calculation:</h4>
-                <div id="original-crc">-</div>
+                <div class="crc-calculations">
+                    <h4>CRC Calculations:</h4>
+                    <div id="original-crc8" class="crc-value">CRC-8: -</div>
+                    <div id="original-crc16" class="crc-value">CRC-16: -</div>
+                    <div id="original-crc32" class="crc-value">CRC-32: -</div>
+                </div>
                 <div class="bit-visualization" id="original-bits"></div>
             </div>
+
             <div class="crc-panel">
-                <h3>Received Message</h3>
-                <div id="received-message">Waiting for reception...</div>
-                <h4>CRC Verification:</h4>
-                <div id="received-crc">-</div>
-                <div class="bit-visualization" id="received-bits"></div>
-                <div id="crc-result"></div>
+                <h3>Received Messages</h3>
+                <div id="crc8-panel" class="crc-type-panel">
+                    <h4>CRC-8</h4>
+                    <div class="received-message">Waiting for reception...</div>
+                    <div class="crc-verification">-</div>
+                    <div class="bit-visualization"></div>
+                    <div class="crc-result"></div>
+                </div>
+                <div id="crc16-panel" class="crc-type-panel">
+                    <h4>CRC-16</h4>
+                    <div class="received-message">Waiting for reception...</div>
+                    <div class="crc-verification">-</div>
+                    <div class="bit-visualization"></div>
+                    <div class="crc-result"></div>
+                </div>
+                <div id="crc32-panel" class="crc-type-panel">
+                    <h4>CRC-32</h4>
+                    <div class="received-message">Waiting for reception...</div>
+                    <div class="crc-verification">-</div>
+                    <div class="bit-visualization"></div>
+                    <div class="crc-result"></div>
+                </div>
             </div>
         </div>
 
@@ -401,6 +504,7 @@
                 <thead>
                     <tr>
                         <th>CRC Type</th>
+                        <th>CRC Value</th>
                         <th>Execution Time (ns)</th>
                         <th>Error Detection Rate</th>
                         <th>Data Overhead (%)</th>
@@ -420,7 +524,7 @@
                 <canvas id="errorDetectionRateChart"></canvas>
             </div>
         </div>
-        
+
         <div class="chart-container">
             <div class="chart-wrapper">
                 <canvas id="dataOverheadChart"></canvas>
@@ -538,82 +642,76 @@
             }
         }
 
-        function updateOriginalMessage(data) {
-            document.getElementById('original-message').textContent = data.message;
-            document.getElementById('original-crc').textContent = data.crc;
+        function updateBinaryVisualization(container, binaryData) {
+            container.innerHTML = '';
+            if (!binaryData) return;
 
-            // Visualize binary data
-            const bitsContainer = document.getElementById('original-bits');
-            bitsContainer.innerHTML = '';
+            // Split the binary data into lines (handling escaped newlines)
+            const lines = binaryData.split('\\n');
 
-            if (data.binaryData) {
-                const bits = data.binaryData.replace(/\s/g, '');
+            lines.forEach(line => {
+                const currentRow = document.createElement('div');
+                currentRow.className = 'bit-row';
+                container.appendChild(currentRow);
+
+                const bits = line.trim().replace(/\s/g, '');
                 for (let i = 0; i < bits.length; i++) {
                     const bit = document.createElement('div');
                     bit.className = `bit bit-${bits[i]}`;
                     bit.textContent = bits[i];
-                    bitsContainer.appendChild(bit);
+                    currentRow.appendChild(bit);
 
                     // Add space between bytes
                     if ((i + 1) % 8 === 0 && i < bits.length - 1) {
                         const spacer = document.createElement('div');
-                        spacer.style.width = '5px';
-                        bitsContainer.appendChild(spacer);
+                        spacer.style.width = '10px';
+                        currentRow.appendChild(spacer);
                     }
                 }
-            }
+            });
+        }
 
-            addLog(`Original message: "${data.message}" with CRC: ${data.crc}`);
+        function updateOriginalMessage(data) {
+            document.getElementById('original-message').textContent = data.message;
+            document.getElementById('original-crc8').textContent = data.crc8;
+            document.getElementById('original-crc16').textContent = data.crc16;
+            document.getElementById('original-crc32').textContent = data.crc32;
+
+            // Update binary visualization
+            const bitsContainer = document.getElementById('original-bits');
+            updateBinaryVisualization(bitsContainer, data.binaryData);
+
+            addLog(`Original message: "${data.message}" with CRC: ${data.crc32}`);
         }
 
         function updateReceivedMessage(data) {
-            document.getElementById('received-message').textContent = data.message;
-            document.getElementById('received-crc').textContent =
-                `Received: ${data.receivedCRC}, Computed: ${data.computedCRC}`;
+            const crcType = data.crcType.toLowerCase().replace('-', '');
+            const panel = document.getElementById(`${crcType}-panel`);
+            if (!panel) return;
 
-            // Visualize binary data with error highlight
-            const bitsContainer = document.getElementById('received-bits');
-            bitsContainer.innerHTML = '';
+            const messageDiv = panel.querySelector('.received-message');
+            const verificationDiv = panel.querySelector('.crc-verification');
+            const bitsContainer = panel.querySelector('.bit-visualization');
+            const resultDiv = panel.querySelector('.crc-result');
 
-            if (data.binaryData) {
-                const bits = data.binaryData.replace(/\s/g, '');
-                for (let i = 0; i < bits.length; i++) {
-                    const bit = document.createElement('div');
+            messageDiv.textContent = data.message;
+            verificationDiv.textContent = `Received: ${data.receivedCRC}, Computed: ${data.computedCRC}`;
 
-                    // Highlight error bit if we know its position
-                    if (errorInjected && errorPosition &&
-                        i === errorPosition.byte * 8 + (7 - errorPosition.bit)) {
-                        bit.className = 'bit bit-error';
-                        bit.title = `Error at bit position: ${errorPosition.position}`;
-                    } else {
-                        bit.className = `bit bit-${bits[i]}`;
-                    }
-
-                    bit.textContent = bits[i];
-                    bitsContainer.appendChild(bit);
-
-                    // Add space between bytes
-                    if ((i + 1) % 8 === 0 && i < bits.length - 1) {
-                        const spacer = document.createElement('div');
-                        spacer.style.width = '5px';
-                        bitsContainer.appendChild(spacer);
-                    }
-                }
-            }
+            // Update binary visualization
+            updateBinaryVisualization(bitsContainer, data.binaryData);
 
             // Update CRC result
-            const resultElement = document.getElementById('crc-result');
             if (data.crcMatch) {
-                resultElement.innerHTML = `<div class="crc-match">✓ CRC MATCH - No errors detected</div>`;
-                addLog(`Packet received successfully. CRC validation passed.`, 'success');
+                resultDiv.innerHTML = `
+                    <div class="crc-match">
+                        <span style="font-size: 24px;">✓</span> CRC MATCH - No errors detected
+                    </div>`;
             } else {
-                resultElement.innerHTML = `<div class="crc-error">⚠ CRC MISMATCH - Error detected!</div>`;
-                addLog(`Packet has errors. CRC validation failed.`, 'error');
+                resultDiv.innerHTML = `
+                    <div class="crc-error">
+                        <span style="font-size: 24px;">⚠</span> CRC MISMATCH - Error detected!
+                    </div>`;
             }
-
-            // Reset error state
-            errorInjected = false;
-            errorPosition = null;
         }
 
         function showPacketTransmission() {
@@ -678,9 +776,9 @@
             tableRows.forEach(row => {
                 const cells = row.getElementsByTagName('td');
                 crcTypes.push(cells[0].textContent);
-                executionTimes.push(parseFloat(cells[1].textContent));
-                errorDetectionRates.push(parseFloat(cells[2].textContent));
-                dataOverheads.push(parseFloat(cells[3].textContent));
+                executionTimes.push(parseFloat(cells[2].textContent));
+                errorDetectionRates.push(parseFloat(cells[3].textContent));
+                dataOverheads.push(parseFloat(cells[4].textContent));
             });
 
             // Execution Time Chart
@@ -709,8 +807,8 @@
                     options: {
                         responsive: true,
                         plugins: {
-                            title: { 
-                                display: true, 
+                            title: {
+                                display: true,
                                 text: 'Execution Time Comparison',
                                 font: {
                                     size: 16,
@@ -772,8 +870,8 @@
                     options: {
                         responsive: true,
                         plugins: {
-                            title: { 
-                                display: true, 
+                            title: {
+                                display: true,
                                 text: 'Error Detection Rate Comparison',
                                 font: {
                                     size: 16,
@@ -836,8 +934,8 @@
                     options: {
                         responsive: true,
                         plugins: {
-                            title: { 
-                                display: true, 
+                            title: {
+                                display: true,
                                 text: 'Data Overhead Comparison',
                                 font: {
                                     size: 16,
@@ -898,18 +996,43 @@
 
          // Existing table update function
         function updatePerformanceMetrics(data) {
-            const performanceBody = document.getElementById('performance-body');
+            const tbody = document.getElementById('performance-body');
             const row = document.createElement('tr');
 
-            row.innerHTML = `
-                <td>${data.crcType}</td>
-                <td>${data.executionTime}</td>
-                <td>${(data.errorDetectionRate * 100).toFixed(2)}%</td>
-                <td>${data.dataOverhead.toFixed(2)}%</td>
-                <td>${data.errorDetected ? '✓' : '✗'}</td>
-            `;
+            // Add CRC Type
+            const typeCell = document.createElement('td');
+            typeCell.textContent = data.crcType;
+            row.appendChild(typeCell);
 
-            performanceBody.appendChild(row);
+            // Add CRC Value
+            const valueCell = document.createElement('td');
+            valueCell.textContent = data.crcValue;
+            row.appendChild(valueCell);
+
+            // Add Execution Time
+            const timeCell = document.createElement('td');
+            timeCell.textContent = data.executionTime;
+            row.appendChild(timeCell);
+
+            // Add Error Detection Rate
+            const rateCell = document.createElement('td');
+            rateCell.textContent = (data.errorDetectionRate * 100).toFixed(2) + '%';
+            row.appendChild(rateCell);
+
+            // Add Data Overhead
+            const overheadCell = document.createElement('td');
+            overheadCell.textContent = data.dataOverhead.toFixed(2) + '%';
+            row.appendChild(overheadCell);
+
+            // Add Error Detection Status
+            const statusCell = document.createElement('td');
+            statusCell.textContent = data.errorDetected ? '✓' : '✗';
+            statusCell.style.color = data.errorDetected ? '#2ecc71' : '#e74c3c';
+            statusCell.style.fontWeight = 'bold';
+            row.appendChild(statusCell);
+
+            // Add to table
+            tbody.insertBefore(row, tbody.firstChild);
 
             // Update charts
             updateCharts(data);
@@ -936,36 +1059,48 @@
         function clearPreviousData() {
             // Clear performance table
             document.getElementById('performance-body').innerHTML = '';
-            
+
             // Reset charts
             if (executionTimeChart) {
                 executionTimeChart.destroy();
                 executionTimeChart = null;
             }
-            
+
             if (errorDetectionRateChart) {
                 errorDetectionRateChart.destroy();
                 errorDetectionRateChart = null;
             }
-            
+
             if (dataOverheadChart) {
                 dataOverheadChart.destroy();
                 dataOverheadChart = null;
             }
-            
+
             // Clear comparative analysis
             document.getElementById('comparative-analysis').innerHTML = '';
-            
+
             // Clear original and received message displays
             document.getElementById('original-message').textContent = 'Waiting for transmission...';
-            document.getElementById('original-crc').textContent = '-';
+            document.getElementById('original-crc8').textContent = '-';
+            document.getElementById('original-crc16').textContent = '-';
+            document.getElementById('original-crc32').textContent = '-';
             document.getElementById('original-bits').innerHTML = '';
-            
-            document.getElementById('received-message').textContent = 'Waiting for reception...';
-            document.getElementById('received-crc').textContent = '-';
-            document.getElementById('received-bits').innerHTML = '';
-            document.getElementById('crc-result').innerHTML = '';
-            
+
+            document.getElementById('crc8-panel').querySelector('.received-message').textContent = 'Waiting for reception...';
+            document.getElementById('crc8-panel').querySelector('.crc-verification').textContent = '-';
+            document.getElementById('crc8-panel').querySelector('.bit-visualization').innerHTML = '';
+            document.getElementById('crc8-panel').querySelector('.crc-result').innerHTML = '';
+
+            document.getElementById('crc16-panel').querySelector('.received-message').textContent = 'Waiting for reception...';
+            document.getElementById('crc16-panel').querySelector('.crc-verification').textContent = '-';
+            document.getElementById('crc16-panel').querySelector('.bit-visualization').innerHTML = '';
+            document.getElementById('crc16-panel').querySelector('.crc-result').innerHTML = '';
+
+            document.getElementById('crc32-panel').querySelector('.received-message').textContent = 'Waiting for reception...';
+            document.getElementById('crc32-panel').querySelector('.crc-verification').textContent = '-';
+            document.getElementById('crc32-panel').querySelector('.bit-visualization').innerHTML = '';
+            document.getElementById('crc32-panel').querySelector('.crc-result').innerHTML = '';
+
             // Clear logs
             document.getElementById('logs').innerHTML = '';
             addLog('Previous data cleared. New simulation started.', 'success');
@@ -975,7 +1110,7 @@
         document.getElementById('startSimulation').addEventListener('click', function() {
             // Clear previous data before starting new simulation
             clearPreviousData();
-            
+
             fetch('http://localhost:8000/update-data', {
                 method: 'POST',
                 headers: {
