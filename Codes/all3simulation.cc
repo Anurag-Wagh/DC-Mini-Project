@@ -22,6 +22,8 @@ using namespace std;
 
 NS_LOG_COMPONENT_DEFINE("CsmaCrcSimulation");
 
+// Global variables
+bool useWebInterface = true;
 const uint8_t Crc8Table[256] = { /* CRC-8 lookup table */
 0x00, 0x07, 0x0E, 0x09, 0x1C, 0x1B, 0x12, 0x15,
 0x38, 0x3F, 0x36, 0x31, 0x24, 0x23, 0x2A, 0x2D,
@@ -130,51 +132,24 @@ uint16_t ComputeCrc16(const vector<uint8_t> &data);
 // uint32_t ComputeHammingDistance(const vector<uint8_t>& original, const vector<uint8_t>& received);
 
 // Function to send data to websocket server
-void SendToWebSocket(const string& messageType, const string& data) {
-    // Reduce terminal output by only logging important messages
-    if (messageType == "error" || messageType == "start" || messageType == "end") {
-        std::cout << "Sending to WebSocket: Type=" << messageType << ", Data=" << data << std::endl;
+void SendToWebSocket(const string& type, const string& data) {
+    if (!useWebInterface) return;
+
+    // Only show important messages in terminal
+    if (type == "start" || type == "end" || type == "error") {
+        cout << "\n" << string(80, '=') << endl;
+        cout << "Event: " << type << endl;
+        cout << string(80, '-') << endl;
     }
 
-    // Format the data as JSON if it's not already
-    std::string payload;
-    if (data.find('{') == 0) {
-        // Data is already JSON
-        payload = "{\"type\":\"" + messageType + "\",\"data\":" + data + "}";
-    } else {
-        // Create JSON with message type and data
-        // Escape quotes in the data
-        std::string escapedData = data;
-        size_t pos = 0;
-        while ((pos = escapedData.find("\"", pos)) != std::string::npos) {
-            escapedData.replace(pos, 1, "\\\"");
-            pos += 2;
-        }
-        payload = "{\"type\":\"" + messageType + "\",\"data\":\"" + escapedData + "\"}";
-    }
+    // Create the curl command with proper JSON escaping
+    stringstream cmd;
+    cmd << "curl -s -X POST -H \"Content-Type: application/json\" -d '{\"type\":\""
+        << type << "\",\"data\":" << data << "}' http://localhost:8000/update-data > /dev/null";
 
-    // Create the curl command with proper escaping
-    std::string escapedPayload = payload;
-    // Replace single quotes with escaped single quotes
-    size_t pos = 0;
-    while ((pos = escapedPayload.find("'", pos)) != std::string::npos) {
-        escapedPayload.replace(pos, 1, "\\'");
-        pos += 2;
-    }
-
-    std::string command = "curl -s -X POST -H \"Content-Type: application/json\" -d '" +
-                           escapedPayload + "' http://localhost:8000/update-data";
-    
-    // Only log the command for important messages
-    if (messageType == "error" || messageType == "start" || messageType == "end") {
-        std::cout << "Executing: " << command << std::endl;
-    }
-
-    // Execute the command and capture the result
-    int result = system(command.c_str());
-
+    int result = system(cmd.str().c_str());
     if (result != 0) {
-        std::cerr << "Error sending data to WebSocket server. Result code: " << result << std::endl;
+        cerr << "Error executing command. Return code: " << result << endl;
     }
 }
 
@@ -204,11 +179,18 @@ uint32_t ComputeCrc(const vector<uint8_t> &data) {
 }
 // Convert data to binary string representation for visualization
 string ToBinaryString(const vector<uint8_t>& data) {
-    string result;
+    stringstream result;
+    int bytesPerLine = 4; // Number of bytes to show per line
+    int byteCount = 0;
+
     for (uint8_t byte : data) {
-        result += bitset<8>(byte).to_string() + " ";
+        result << bitset<8>(byte).to_string() << " ";
+        byteCount++;
+        if (byteCount % bytesPerLine == 0 && byteCount < data.size()) {
+            result << "\\n"; // Use escaped newline for JSON
+        }
     }
-    return result;
+    return result.str();
 }
 
 // Function to introduce a random error
@@ -288,7 +270,6 @@ vector<bool> errorDetectionResults;
 
 int main(int argc, char* argv[]) {
     CommandLine cmd;
-    bool useWebInterface = true;
     cmd.AddValue("web", "Use Web Interface", useWebInterface);
     cmd.Parse(argc, argv);
 
@@ -306,14 +287,23 @@ int main(int argc, char* argv[]) {
         SendToWebSocket("start", "{\"status\":\"started\"}");
     }
 
-    // Modify the user input section
+    cout << "\n" << string(80, '*') << endl;
+    cout << "CRC Simulation Started" << endl;
+    cout << string(80, '*') << endl << endl;
+
     cout << "Enter a paragraph to send: ";
     string input;
     getline(cin, input);
 
-    cout << "Inject error? (yes/no): ";
+    cout << "\nInject error? (yes/no): ";
     string injectErrorChoice;
     cin >> injectErrorChoice;
+    cout << endl;
+
+    // Show a separator before processing starts
+    cout << string(80, '-') << endl;
+    cout << "Processing..." << endl;
+    cout << string(80, '-') << endl << endl;
 
     vector<uint8_t> payload(input.begin(), input.end());
     // Prepare payloads for different CRC types
@@ -339,7 +329,22 @@ int main(int argc, char* argv[]) {
 
     uint32_t errorBit = -1;
     if (injectErrorChoice == "yes") {
-        InjectError(payload, errorBit);
+        // Generate error position once for all CRC types
+        random_device rd;
+        mt19937 gen(rd());
+        uniform_int_distribution<> dist(0, payload.size() * 8 - 1);
+        errorBit = dist(gen);
+
+        // Send error information to web interface
+        uint32_t bytePos = errorBit / 8;
+        uint32_t bitPos = errorBit % 8;
+        stringstream ss;
+        ss << "{\"position\":" << errorBit
+           << ",\"byte\":" << bytePos
+           << ",\"bit\":" << bitPos
+           << ",\"originalByte\":\"" << bitset<8>(payload[bytePos]).to_string()
+           << "\",\"modifiedByte\":\"" << bitset<8>(payload[bytePos] ^ (1 << bitPos)).to_string() << "\"}";
+        SendToWebSocket("error", ss.str());
     }
 
     // NS-3 Network Setup
@@ -386,7 +391,6 @@ int main(int argc, char* argv[]) {
     for (size_t i = 0; i < crcTypes.size(); ++i) {
         vector<uint8_t> payload = payloads[i];
         uint32_t crc = 0;
-        uint32_t errorBit = -1;
 
         // Measure execution time
         auto start = chrono::high_resolution_clock::now();
@@ -402,9 +406,11 @@ int main(int argc, char* argv[]) {
         auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start);
         executionTimes.push_back(duration.count());
 
-        // Error injection and detection
+        // Error injection using the same error position
         if (injectErrorChoice == "yes") {
-            InjectError(payload, errorBit);
+            uint32_t bytePos = errorBit / 8;
+            uint32_t bitPos = errorBit % 8;
+            payload[bytePos] ^= (1 << bitPos);
         }
 
         // Verify CRC after potential error
@@ -418,39 +424,46 @@ int main(int argc, char* argv[]) {
         bool errorDetected = (crc != receivedCrc);
         errorDetectionResults.push_back(errorDetected);
 
-        // Calculate error detection rate (simplified for demonstration)
-        // In a real scenario, you would run multiple tests with different error patterns
+        // Calculate error detection rate
         double errorDetectionRate = errorDetected ? 1.0 : 0.0;
         errorDetectionRates.push_back(errorDetectionRate);
 
-        // Calculate data overhead (CRC bits / data bits)
+        // Calculate data overhead
         size_t crcBits = 0;
         switch(i) {
             case 0: crcBits = 8; break;
             case 1: crcBits = 16; break;
             case 2: crcBits = 32; break;
         }
-        double dataOverhead = (double)crcBits / (payload.size() * 8) * 100.0; // as percentage
+        double dataOverhead = (double)crcBits / (payload.size() * 8) * 100.0;
         dataOverheads.push_back(dataOverhead);
 
         // Send performance data to web interface
         stringstream ss;
+        ss.clear();
+        ss.str("");
+        ss << std::dec;  // Set to decimal mode from the start
         ss << "{\"crcType\":\"" << crcTypes[i]
-           << "\",\"executionTime\":" << executionTimes.back()
+           << "\",\"crcValue\":\"0x" << std::hex << std::uppercase << crc
+           << "\",\"receivedCRC\":\"0x" << std::hex << std::uppercase << receivedCrc
+           << "\",\"executionTime\":" << std::dec << executionTimes.back()
            << ",\"errorDetectionRate\":" << errorDetectionRates.back()
            << ",\"dataOverhead\":" << dataOverheads.back()
-           << ",\"errorDetected\":" << (errorDetected ? "true" : "false") << "}";
+           << ",\"errorDetected\":" << (errorDetected ? "true" : "false")
+           << ",\"binaryData\":\"" << ToBinaryString(payload) << "\"}";
 
         SendToWebSocket("performance", ss.str());
 
-        // Append CRC to payload for transmission
-        payload.push_back((crc >> 24) & 0xFF);
-        payload.push_back((crc >> 16) & 0xFF);
-        payload.push_back((crc >> 8) & 0xFF);
-        payload.push_back(crc & 0xFF);
+        // Send received data visualization
+        stringstream recvss;
+        recvss << "{\"message\":\"" << string(payload.begin(), payload.end())
+               << "\",\"receivedCRC\":\"0x" << std::hex << std::uppercase << receivedCrc
+               << "\",\"computedCRC\":\"0x" << std::hex << std::uppercase << crc
+               << "\",\"crcMatch\":" << (crc == receivedCrc ? "true" : "false")
+               << ",\"binaryData\":\"" << ToBinaryString(payload)
+               << "\",\"crcType\":\"" << crcTypes[i] << "\"}";
 
-        // Use the modified payload for transmission
-        payloads[i] = payload;
+        SendToWebSocket("received", recvss.str());
     }
 
     // Send Packet
