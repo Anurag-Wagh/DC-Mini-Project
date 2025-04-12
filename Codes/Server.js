@@ -47,12 +47,16 @@ wss.on('connection', (ws) => {
 
 // Broadcast message to all connected clients
 function broadcast(message) {
-    const data = typeof message === 'string' ? message : JSON.stringify(message);
-    clients.forEach(client => {
-        if (client.readyState === WebSocket.OPEN) {
-            client.send(data);
-        }
-    });
+    try {
+        const data = typeof message === 'string' ? message : JSON.stringify(message);
+        clients.forEach(client => {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(data);
+            }
+        });
+    } catch (error) {
+        console.error('Error broadcasting message:', error);
+    }
 }
 
 // Route to handle updates from NS3
@@ -60,37 +64,33 @@ app.post('/update-data', (req, res) => {
     try {
         let data;
 
+        // Handle string input
         if (typeof req.body === 'string') {
             try {
-                // Try to parse the entire body as JSON first
                 data = JSON.parse(req.body);
             } catch (parseError) {
-                // If that fails, try to extract JSON from the string
-                const jsonMatch = req.body.match(/\{.*\}/s);
-                if (jsonMatch) {
-                    try {
-                        data = JSON.parse(jsonMatch[0]);
-                    } catch (e) {
-                        console.error('Error parsing extracted JSON:', e);
-                        return res.status(200).send({ status: 'success' });
-                    }
-                } else {
-                    return res.status(200).send({ status: 'success' });
-                }
+                console.error('Error parsing JSON string:', parseError);
+                return res.status(400).json({ error: 'Invalid JSON format' });
             }
         } else {
             data = req.body;
         }
 
-        if (data) {
-            console.log('Received data from NS3:', data);
-            broadcast(data);
+        // Validate data structure
+        if (!data || !data.type) {
+            return res.status(400).json({ error: 'Invalid data format' });
         }
 
-        res.status(200).send({ status: 'success' });
+        // Log received data for debugging
+        console.log('Received event type:', data.type);
+
+        // Broadcast to all clients
+        broadcast(data);
+
+        res.status(200).json({ status: 'success' });
     } catch (error) {
         console.error('Error processing update:', error);
-        res.status(200).send({ status: 'success' });
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 
