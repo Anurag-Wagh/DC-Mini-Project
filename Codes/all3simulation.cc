@@ -108,28 +108,32 @@ const uint32_t Crc32Table[256] = {
     0x4369E96A, 0x346ED9FC, 0xAD678846, 0xDA60B8D0, 0x44042D73, 0x33031DE5, 0xAA0A4C5F, 0xDD0D7CC9,
     0x5005713C, 0x270241AA, 0xBE0B1010, 0xC90C2086, 0x5768B525, 0x206F85B3, 0xB966D409, 0xCE61E49F,
     0x5EDEF90E, 0x29D9C998, 0xB0D09822, 0xC7D7A8B4, 0x59B33D17, 0x2EB40D81, 0xB7BD5C3B, 0xC0BA6CAD,
-    0xEDB88320, 0x9ABFB3B6, 0x03B6E20C, 0x74B1D29A, 0xEAD54739, 0x9DD277AF, 0x04DB2615, 0x73DC1683,
-    0xE3630B12, 0x94643B84, 0x0D6D6A3E, 0x7A6A5AA8, 0xE40ECF0B, 0x9309FF9D, 0x0A00AE27, 0x7D079EB1,
-    0xF00F9344, 0x8708A3D2, 0x1E01F268, 0x6906C2FE, 0xF762575D, 0x806567CB, 0x196C3671, 0x6E6B06E7,
-    0xFED41B76, 0x89D32BE0, 0x10DA7A5A, 0x67DD4ACC, 0xF9B9DF6F, 0x8EBEEFF9, 0x17B7BE43, 0x60B08ED5,
-    0xD6D6A3E8, 0xA1D1937E, 0x38D8C2C4, 0x4FDFF252, 0xD1BB67F1, 0xA6BC5767, 0x3FB506DD, 0x48B2364B,
-    0xD80D2BDA, 0xAF0A1B4C, 0x36034AF6, 0x41047A60, 0xDF60EFC3, 0xA867DF55, 0x316E8EEF, 0x4669BE79,
-    0xCB61B38C, 0xBC66831A, 0x256FD2A0, 0x5268E236, 0xCC0C7795, 0xBB0B4703, 0x220216B9, 0x5505262F,
-    0xC5BA3BBE, 0xB2BD0B28, 0x2BB45A92, 0x5CB36A04, 0xC2D7FFA7, 0xB5D0CF31, 0x2CD99E8B, 0x5BDEAE1D,
-    0x9B64C2B0, 0xEC63F226, 0x756AA39C, 0x026D930A, 0x9C0906A9, 0xEB0E363F, 0x72076785, 0x05005713,
-    0x95BF4A82, 0xE2B87A14, 0x7BB12BAE, 0x0CB61B38, 0x92D28E9B, 0xE5D5BE0D, 0x7CDCEFB7, 0x0BDBDF21,
-    0x86D3D2D4, 0xF1D4E242, 0x68DDB3F8, 0x1FDA836E, 0x81BE16CD, 0xF6B9265B, 0x6FB077E1, 0x18B74777,
-    0x88085AE6, 0xFF0F6A70, 0x66063BCA, 0x11010B5C, 0x8F659EFF, 0xF862AE69, 0x616BFFD3, 0x166CCF45,
-    0xA00AE278, 0xD70DD2EE, 0x4E048354, 0x3903B3C2, 0xA7672661, 0xD06016F7, 0x4969474D, 0x3E6E77DB,
-    0xAED16A4A, 0xD9D65ADC, 0x40DF0B66, 0x37D83BF0, 0xA9BCAE53, 0xDEBB9EC5, 0x47B2CF7F, 0x30B5FFE9,
-    0xBDBDF21C, 0xCABAC28A, 0x53B39330, 0x24B4A3A6, 0xBAD03605, 0xCDD70693, 0x54DE5729, 0x23D967BF,
-    0xB3667A2E, 0xC4614AB8, 0x5D681B02, 0x2A6F2B94, 0xB40BBF37, 0xC30C8FA1, 0x5A05DF1B, 0x2D02EF8D
+0xEDB88320, 0x9ABFB3B6, 0x03B6E20C, 0x74B1D29A, 0xEAD54739, 0x9DD277AF, 0x04DB2615, 0x73DC1683,
+0xE3630B12, 0x94643B84, 0x0D6D6A3E, 0x7A6A5AA8, 0xE40ECF0B, 0x9309FF9D, 0x0A00AE27, 0x7D079EB1,
+0xF00F9344, 0x8708A3D2, 0x1E01F268, 0x6906C2FE, 0xF762575D, 0x806567CB, 0x196C3671, 0x6E6B06E7,
+0xFED41B76, 0x89D32BE0, 0x10DA7A5A, 0x67DD4ACC, 0xF9B9DF6F, 0x8EBEEFF9, 0x17B7BE43, 0x60B08ED5,
+0xD6D6A3E8, 0xA1D1937E, 0x38D8C2C4, 0x4FDFF252, 0xD1BB67F1, 0xA6BC5767, 0x3FB506DD, 0x48B2364B,
+0xD80D2BDA, 0xAF0A1B4C, 0x36034AF6, 0x41047A60, 0xDF60EFC3, 0xA867DF55, 0x316E8EEF, 0x4669BE79,
+0xCB61B38C, 0xBC66831A, 0x256FD2A0, 0x5268E236, 0xCC0C7795, 0xBB0B4703, 0x220216B9, 0x5505262F,
+0xC5BA3BBE, 0xB2BD0B28, 0x2BB45A92, 0x5CB36A04, 0xC2D7FFA7, 0xB5D0CF31, 0x2CD99E8B, 0x5BDEAE1D,
+0x9B64C2B0, 0xEC63F226, 0x756AA39C, 0x026D930A, 0x9C0906A9, 0xEB0E363F, 0x72076785, 0x05005713,
+0x95BF4A82, 0xE2B87A14, 0x7BB12BAE, 0x0CB61B38, 0x92D28E9B, 0xE5D5BE0D, 0x7CDCEFB7, 0x0BDBDF21,
+0x86D3D2D4, 0xF1D4E242, 0x68DDB3F8, 0x1FDA836E, 0x81BE16CD, 0xF6B9265B, 0x6FB077E1, 0x18B74777,
+0x88085AE6, 0xFF0F6A70, 0x66063BCA, 0x11010B5C, 0x8F659EFF, 0xF862AE69, 0x616BFFD3, 0x166CCF45,
+0xA00AE278, 0xD70DD2EE, 0x4E048354, 0x3903B3C2, 0xA7672661, 0xD06016F7, 0x4969474D, 0x3E6E77DB,
+0xAED16A4A, 0xD9D65ADC, 0x40DF0B66, 0x37D83BF0, 0xA9BCAE53, 0xDEBB9EC5, 0x47B2CF7F, 0x30B5FFE9,
+0xBDBDF21C, 0xCABAC28A, 0x53B39330, 0x24B4A3A6, 0xBAD03605, 0xCDD70693, 0x54DE5729, 0x23D967BF,
+0xB3667A2E, 0xC4614AB8, 0x5D681B02, 0x2A6F2B94, 0xB40BBF37, 0xC30C8FA1, 0x5A05DF1B, 0x2D02EF8D
 };
 // Add these function declarations
 uint8_t ComputeCrc8(const vector<uint8_t> &data);
 uint16_t ComputeCrc16(const vector<uint8_t> &data);
-// Remove Hamming Distance function declaration
-// uint32_t ComputeHammingDistance(const vector<uint8_t>& original, const vector<uint8_t>& received);
+uint32_t ComputeCrc(const vector<uint8_t> &data);
+string ToBinaryString(const vector<uint8_t>& data);
+void SendToWebSocket(const string& type, const string& data);
+
+// Remove the forward declarations for the JSON helper functions
+// ... rest of the existing code ...
 
 // Function to send data to websocket server
 void SendToWebSocket(const string& type, const string& data) {
@@ -142,14 +146,16 @@ void SendToWebSocket(const string& type, const string& data) {
         cout << string(80, '-') << endl;
     }
 
-    // Create the curl command with proper JSON escaping
-    stringstream cmd;
-    cmd << "curl -s -X POST -H \"Content-Type: application/json\" -d '{\"type\":\""
-        << type << "\",\"data\":" << data << "}' http://localhost:8000/update-data > /dev/null";
+    // Create JSON string with proper escaping
+    string jsonData = "{\"type\":\"" + type + "\",\"data\":" + data + "}";
 
-    int result = system(cmd.str().c_str());
+    // Create the curl command
+    string cmd = "curl -s -X POST -H \"Content-Type: application/json\" -d '" +
+                jsonData + "' http://localhost:8000/update-data > /dev/null 2>&1";
+
+    int result = system(cmd.c_str());
     if (result != 0) {
-        cerr << "Error executing command. Return code: " << result << endl;
+        cerr << "Warning: Command execution returned code: " << result << endl;
     }
 }
 
@@ -180,16 +186,16 @@ uint32_t ComputeCrc(const vector<uint8_t> &data) {
 // Convert data to binary string representation for visualization
 string ToBinaryString(const vector<uint8_t>& data) {
     stringstream result;
-    int bytesPerLine = 4; // Number of bytes to show per line
-    int byteCount = 0;
-
+    result << "\"";  // Start JSON string
+    bool first = true;
     for (uint8_t byte : data) {
-        result << bitset<8>(byte).to_string() << " ";
-        byteCount++;
-        if (byteCount % bytesPerLine == 0 && byteCount < data.size()) {
-            result << "\\n"; // Use escaped newline for JSON
+        if (!first) {
+            result << "\\n";  // Add newline between bytes
         }
+        result << bitset<8>(byte).to_string();
+        first = false;
     }
+    result << "\"";  // End JSON string
     return result.str();
 }
 
@@ -252,8 +258,8 @@ void ReceivePacket(Ptr<Socket> socket) {
            << "\",\"receivedCRC\":\"0x" << std::hex << std::uppercase << receivedChecksum
            << "\",\"computedCRC\":\"0x" << std::hex << std::uppercase << computedChecksum
            << "\",\"crcMatch\":" << (crcMatch ? "true" : "false")
-           << ",\"binaryData\":\"" << ToBinaryString(payloadData)
-           << "\",\"binaryCRC\":\"" << bitset<32>(receivedChecksum).to_string() << "\"}";
+           << ",\"binaryData\":" << ToBinaryString(payloadData)
+           << ",\"binaryCRC\":\"" << bitset<32>(receivedChecksum).to_string() << "\"}";
 
         SendToWebSocket("received", ss.str());
     }
@@ -267,6 +273,44 @@ vector<double> errorDetectionRates;
 vector<double> dataOverheads;
 vector<bool> errorDetectionResults;
 
+// Helper function to create JSON string for performance metrics
+string CreatePerformanceJson(const string& crcType, uint32_t crc, uint32_t receivedCrc,
+                           uint64_t execTime, double errorRate, double overhead,
+                           bool errorDetected, const string& binaryData) {
+    stringstream ss;
+    ss << "{";
+    ss << "\"crcType\":\"" << crcType << "\",";
+    ss << "\"crcValue\":\"0x" << hex << uppercase << crc << "\",";
+    ss << "\"receivedCRC\":\"0x" << hex << uppercase << receivedCrc << "\",";
+    ss << "\"executionTime\":" << dec << execTime << ",";
+    ss << "\"errorDetectionRate\":" << errorRate << ",";
+    ss << "\"dataOverhead\":" << overhead << ",";
+    ss << "\"errorDetected\":" << (errorDetected ? "true" : "false") << ",";
+    ss << "\"binaryData\":" << binaryData;
+    ss << "}";
+    return ss.str();
+}
+
+// Helper function to create JSON string for received messages
+string CreateReceivedJson(const string& message, uint32_t receivedCrc, uint32_t computedCrc,
+                         bool crcMatch, const string& binaryData, const string& crcType = "",
+                         uint32_t errorBit = UINT32_MAX) {
+    stringstream ss;
+    ss << "{";
+    ss << "\"message\":\"" << message << "\",";
+    ss << "\"receivedCRC\":\"0x" << hex << uppercase << receivedCrc << "\",";
+    ss << "\"computedCRC\":\"0x" << hex << uppercase << computedCrc << "\",";
+    ss << "\"crcMatch\":" << (crcMatch ? "true" : "false") << ",";
+    ss << "\"binaryData\":" << binaryData;
+    if (!crcType.empty()) {
+        ss << ",\"crcType\":\"" << crcType << "\"";
+    }
+    if (errorBit != UINT32_MAX) {
+        ss << ",\"errorBit\":" << dec << errorBit;
+    }
+    ss << "}";
+    return ss.str();
+}
 
 int main(int argc, char* argv[]) {
     CommandLine cmd;
@@ -314,9 +358,15 @@ int main(int argc, char* argv[]) {
     if (useWebInterface) {
         stringstream ss;
         ss << "{\"message\":\"" << input
-           << "\",\"crc\":\"0x" << std::hex << std::uppercase << crc
-           << "\",\"binaryData\":\"" << ToBinaryString(payload)
-           << "\",\"binaryCRC\":\"" << bitset<32>(crc).to_string() << "\"}";
+           << "\",\"crc\":\"0x" << hex << uppercase << crc
+           << "\",\"binaryData\":" << ToBinaryString(payload)
+           << ",\"binaryCRC\":\"" << bitset<32>(crc).to_string() << "\"";
+        if (injectErrorChoice == "yes") {
+            uint32_t errorBit = -1;
+            InjectError(payload, errorBit);
+            ss << ",\"errorBit\":" << dec << errorBit;
+        }
+        ss << "}";
 
         SendToWebSocket("original", ss.str());
     }
@@ -439,31 +489,29 @@ int main(int argc, char* argv[]) {
         dataOverheads.push_back(dataOverhead);
 
         // Send performance data to web interface
-        stringstream ss;
-        ss.clear();
-        ss.str("");
-        ss << std::dec;  // Set to decimal mode from the start
-        ss << "{\"crcType\":\"" << crcTypes[i]
-           << "\",\"crcValue\":\"0x" << std::hex << std::uppercase << crc
-           << "\",\"receivedCRC\":\"0x" << std::hex << std::uppercase << receivedCrc
-           << "\",\"executionTime\":" << std::dec << executionTimes.back()
-           << ",\"errorDetectionRate\":" << errorDetectionRates.back()
-           << ",\"dataOverhead\":" << dataOverheads.back()
-           << ",\"errorDetected\":" << (errorDetected ? "true" : "false")
-           << ",\"binaryData\":\"" << ToBinaryString(payload) << "\"}";
-
-        SendToWebSocket("performance", ss.str());
+        string perfData = CreatePerformanceJson(
+            crcTypes[i], crc, receivedCrc, executionTimes.back(),
+            errorDetectionRates.back(), dataOverheads.back(),
+            errorDetected, ToBinaryString(payload)
+        );
+        SendToWebSocket("performance", perfData);
 
         // Send received data visualization
-        stringstream recvss;
-        recvss << "{\"message\":\"" << string(payload.begin(), payload.end())
-               << "\",\"receivedCRC\":\"0x" << std::hex << std::uppercase << receivedCrc
-               << "\",\"computedCRC\":\"0x" << std::hex << std::uppercase << crc
-               << "\",\"crcMatch\":" << (crc == receivedCrc ? "true" : "false")
-               << ",\"binaryData\":\"" << ToBinaryString(payload)
-               << "\",\"crcType\":\"" << crcTypes[i] << "\"}";
+        string recvData = CreateReceivedJson(
+            string(payload.begin(), payload.end()),
+            receivedCrc, crc, (crc == receivedCrc),
+            ToBinaryString(payload), crcTypes[i],
+            (injectErrorChoice == "yes" ? errorBit : UINT32_MAX)
+        );
+        SendToWebSocket("received", recvData);
 
-        SendToWebSocket("received", recvss.str());
+        // Send both original and received binary data for comparison
+        if (useWebInterface) {
+            stringstream compareData;
+            compareData << "{\"originalBinaryData\":" << ToBinaryString(payload)
+                        << ",\"receivedBinaryData\":" << ToBinaryString(payload) << "}";
+            SendToWebSocket("compare", compareData.str());
+        }
     }
 
     // Send Packet
