@@ -215,49 +215,100 @@
             max-height: 200px;
             overflow-y: auto;
             overflow-x: hidden;
+            width: 100%;
+            box-sizing: border-box;
+            gap: 4px;
         }
 
         .bit-row {
             display: flex;
-            margin-bottom: 5px;
-            padding: 2px;
+            padding: 4px;
             background-color: rgba(255, 255, 255, 0.5);
             border-radius: 4px;
+            width: 100%;
+            justify-content: center;
+            margin: 0;
         }
 
         .bit {
-            width: 25px;
-            height: 25px;
-            margin-right: 3px;
+            width: 24px;
+            height: 24px;
+            margin: 0 2px;
             display: flex;
             justify-content: center;
             align-items: center;
             font-family: monospace;
             font-size: 14px;
-            border-radius: 4px;
-            transition: transform 0.2s, background-color 0.2s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 3px;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .bit-0 {
+            background: linear-gradient(135deg, #e0e0e0, #bdbdbd);
+            color: #424242;
+            border: 1px solid #9e9e9e;
+        }
+
+        .bit-1 {
+            background: linear-gradient(135deg, #90caf9, #64b5f6);
+            color: #1565c0;
+            border: 1px solid #1976d2;
+        }
+
+        .bit-original {
+            background: linear-gradient(135deg, #00C851, #007E33) !important;
+            color: white !important;
+            border: 2px solid #004d1a !important;
+            box-shadow: 0 0 10px rgba(0, 200, 81, 0.7) !important;
+            animation: pulse 1s infinite !important;
+            z-index: 2;
+        }
+
+        .bit-error {
+            background: linear-gradient(135deg, #ff4444, #cc0000) !important;
+            color: white !important;
+            border: 2px solid #990000 !important;
+            box-shadow: 0 0 10px rgba(255, 68, 68, 0.7) !important;
+            animation: pulse 1s infinite !important;
+            z-index: 2;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            }
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            }
         }
 
         .bit:hover {
             transform: scale(1.1);
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 3;
         }
 
-        .bit-0 {
-            background: linear-gradient(135deg, #a5d6f7, #3498db);
+        .bit:hover::after {
+            content: attr(title);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 4px 8px;
+            background-color: #2c3e50;
             color: white;
-        }
-
-        .bit-1 {
-            background: linear-gradient(135deg, #3498db, #2980b9);
-            color: white;
-        }
-
-        .bit-error {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
-            color: white;
-            animation: pulse 1.5s infinite;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 10;
         }
 
         .connection {
@@ -347,12 +398,6 @@
             font-size: 1.1rem;
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-
         @media (max-width: 768px) {
             .crc-details {
                 flex-direction: column;
@@ -432,6 +477,30 @@
             display: flex;
             align-items: center;
             gap: 10px;
+        }
+
+        /* Add these new styles */
+        .bit-header {
+            background: linear-gradient(135deg, #f5f5f5, #e0e0e0) !important;
+            color: #424242 !important;
+            font-weight: bold;
+            border-bottom: 2px solid #9e9e9e;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+
+        .byte-label {
+            width: 60px;
+            padding: 4px;
+            text-align: right;
+            font-family: monospace;
+            color: #424242;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 8px;
+            background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
         }
     </style>
 </head>
@@ -578,7 +647,13 @@
             socket.onmessage = function(event) {
                 try {
                     const message = JSON.parse(event.data);
-                    handleSimulationEvent(message);
+                    if (message.type === 'compare') {
+                        const differingBits = handleComparisonData(message.originalBinaryData, message.receivedBinaryData);
+                        updateOriginalMessage({ ...message, differingBits });
+                        updateReceivedMessage({ ...message, differingBits });
+                    } else {
+                        handleSimulationEvent(message);
+                    }
                 } catch (e) {
                     addLog('Error parsing message: ' + e.message, 'error');
                 }
@@ -642,46 +717,77 @@
             }
         }
 
-        function updateBinaryVisualization(container, binaryData) {
+        function handleComparisonData(originalData, receivedData) {
+            const differingBits = [];
+            const originalBits = originalData.replace(/[\s\n\\n]/g, '');
+            const receivedBits = receivedData.replace(/[\s\n\\n]/g, '');
+
+            for (let i = 0; i < Math.min(originalBits.length, receivedBits.length); i++) {
+                if (originalBits[i] !== receivedBits[i]) {
+                    differingBits.push(i);
+                }
+            }
+            return differingBits;
+        }
+
+        function updateBinaryVisualization(container, binaryData, errorBitPositions = [], highlightType = '') {
             container.innerHTML = '';
             if (!binaryData) return;
 
-            // Split the binary data into lines (handling escaped newlines)
-            const lines = binaryData.split('\\n');
+            const allBits = binaryData.replace(/[\s\n\\n]/g, '');
 
-            lines.forEach(line => {
-                const currentRow = document.createElement('div');
-                currentRow.className = 'bit-row';
-                container.appendChild(currentRow);
+            const headerRow = document.createElement('div');
+            headerRow.className = 'bit-row bit-header';
+            for (let i = 0; i < 8; i++) {
+                const headerBit = document.createElement('div');
+                headerBit.className = 'bit bit-header';
+                headerBit.textContent = i;
+                headerRow.appendChild(headerBit);
+            }
+            container.appendChild(headerRow);
 
-                const bits = line.trim().replace(/\s/g, '');
-                for (let i = 0; i < bits.length; i++) {
-                    const bit = document.createElement('div');
-                    bit.className = `bit bit-${bits[i]}`;
-                    bit.textContent = bits[i];
-                    currentRow.appendChild(bit);
+            for (let i = 0; i < allBits.length; i += 8) {
+                const byte = allBits.slice(i, i + 8);
+                if (byte.length === 8) {
+                    const currentRow = document.createElement('div');
+                    currentRow.className = 'bit-row';
 
-                    // Add space between bytes
-                    if ((i + 1) % 8 === 0 && i < bits.length - 1) {
-                        const spacer = document.createElement('div');
-                        spacer.style.width = '10px';
-                        currentRow.appendChild(spacer);
+                    const byteLabel = document.createElement('div');
+                    byteLabel.className = 'byte-label';
+                    byteLabel.textContent = `Byte ${i/8}:`;
+                    currentRow.appendChild(byteLabel);
+
+                    container.appendChild(currentRow);
+
+                    for (let j = 0; j < 8; j++) {
+                        const bit = document.createElement('div');
+                        const globalBitPosition = i + j;
+                        bit.className = `bit bit-${byte[j]}`;
+
+                        if (errorBitPositions && errorBitPositions.includes(globalBitPosition)) {
+                            bit.className = `bit bit-${byte[j]} ${highlightType === 'original' ? 'bit-original' : 'bit-error'}`;
+                            bit.title = `Bit ${globalBitPosition} differs from ${highlightType === 'original' ? 'received' : 'original'} data`;
+                            bit.style.animation = 'pulse 1s infinite';
+                            bit.style.border = '2px solid yellow';
+                            bit.style.boxShadow = '0 0 10px yellow';
+                        }
+
+                        bit.textContent = byte[j];
+                        currentRow.appendChild(bit);
                     }
                 }
-            });
+            }
         }
 
         function updateOriginalMessage(data) {
             document.getElementById('original-message').textContent = data.message;
-            document.getElementById('original-crc8').textContent = data.crc8;
-            document.getElementById('original-crc16').textContent = data.crc16;
-            document.getElementById('original-crc32').textContent = data.crc32;
+            document.getElementById('original-crc8').textContent = data.crc8 || '-';
+            document.getElementById('original-crc16').textContent = data.crc16 || '-';
+            document.getElementById('original-crc32').textContent = data.crc32 || '-';
 
-            // Update binary visualization
             const bitsContainer = document.getElementById('original-bits');
-            updateBinaryVisualization(bitsContainer, data.binaryData);
-
-            addLog(`Original message: "${data.message}" with CRC: ${data.crc32}`);
+            const differingBits = data.differingBits || [];
+            updateBinaryVisualization(bitsContainer, data.binaryData, differingBits, 'original');
         }
 
         function updateReceivedMessage(data) {
@@ -697,10 +803,9 @@
             messageDiv.textContent = data.message;
             verificationDiv.textContent = `Received: ${data.receivedCRC}, Computed: ${data.computedCRC}`;
 
-            // Update binary visualization
-            updateBinaryVisualization(bitsContainer, data.binaryData);
+            const differingBits = data.differingBits || [];
+            updateBinaryVisualization(bitsContainer, data.binaryData, differingBits, 'received');
 
-            // Update CRC result
             if (data.crcMatch) {
                 resultDiv.innerHTML = `
                     <div class="crc-match">
