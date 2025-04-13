@@ -228,6 +228,8 @@
             width: 100%;
             justify-content: center;
             margin: 0;
+            position: relative;
+            align-items: center;
         }
 
         .bit {
@@ -257,6 +259,22 @@
             border: 1px solid #1976d2;
         }
 
+        .flipped-bit {
+            background: #ff4444 !important;
+            color: white !important;
+            border: 3px solid #cc0000 !important;
+            animation: highlight 1s infinite;
+            font-weight: bold;
+            transform: scale(1.2);
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+
+        @keyframes highlight {
+            0% { background: #ff4444; }
+            50% { background: #cc0000; }
+            100% { background: #ff4444; }
+        }
+
         .bit-original {
             background: linear-gradient(135deg, #00C851, #007E33) !important;
             color: white !important;
@@ -267,26 +285,28 @@
         }
 
         .bit-error {
-            background: linear-gradient(135deg, #ff4444, #cc0000) !important;
+            background: #ff4444 !important;
             color: white !important;
-            border: 2px solid #990000 !important;
-            box-shadow: 0 0 10px rgba(255, 68, 68, 0.7) !important;
+            border: 3px solid #cc0000 !important;
             animation: pulse 1s infinite !important;
-            z-index: 2;
+            font-weight: bold !important;
+            transform: scale(1.2) !important;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5) !important;
+            z-index: 10;
         }
 
         @keyframes pulse {
             0% {
-                transform: scale(1);
-                box-shadow: 0 0 10px rgba(0,0,0,0.2);
+                background: #ff4444;
+                transform: scale(1.2);
             }
             50% {
-                transform: scale(1.1);
-                box-shadow: 0 0 15px rgba(0,0,0,0.3);
+                background: #cc0000;
+                transform: scale(1.3);
             }
             100% {
-                transform: scale(1);
-                box-shadow: 0 0 10px rgba(0,0,0,0.2);
+                background: #ff4444;
+                transform: scale(1.2);
             }
         }
 
@@ -502,6 +522,94 @@
             border-radius: 4px;
             border: 1px solid #e0e0e0;
         }
+
+        .bit-flipped {
+            animation: flashingBit 1.5s infinite;
+            border: 2px solid #ff4444 !important;
+            box-shadow: 0 0 15px rgba(255, 68, 68, 0.5);
+            position: relative;
+        }
+
+        .bit-flipped::before {
+            content: '↯';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ff4444;
+            font-size: 16px;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(255, 68, 68, 0.5);
+        }
+
+        @keyframes flashingBit {
+            0% {
+                background: linear-gradient(135deg, #ff4444, #cc0000);
+                color: white;
+                transform: scale(1);
+            }
+            50% {
+                background: linear-gradient(135deg, #cc0000, #ff4444);
+                color: white;
+                transform: scale(1.2);
+            }
+            100% {
+                background: linear-gradient(135deg, #ff4444, #cc0000);
+                color: white;
+                transform: scale(1);
+            }
+        }
+
+        .bit-info-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        .bit:hover .bit-info-tooltip {
+            opacity: 1;
+        }
+
+        /* Add this new style for marking flipped bits */
+        .marked-bit {
+            position: relative;
+            background-color: #ff0000 !important;
+            color: white !important;
+        }
+
+        .marked-bit::before {
+            content: "↓";
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ff0000;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .marked-bit::after {
+            content: "FLIPPED";
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ff0000;
+            font-size: 10px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body>
@@ -530,13 +638,29 @@
             <div class="crc-panel">
                 <h3>Original Message</h3>
                 <div id="original-message">Waiting for transmission...</div>
-                <div class="crc-calculations">
-                    <h4>CRC Calculations:</h4>
-                    <div id="original-crc8" class="crc-value">CRC-8: -</div>
-                    <div id="original-crc16" class="crc-value">CRC-16: -</div>
-                    <div id="original-crc32" class="crc-value">CRC-32: -</div>
-                </div>
                 <div class="bit-visualization" id="original-bits"></div>
+                <div id="error-info-panel" style="display: none; margin-top: 20px; padding: 15px; background-color: #ffebee; border: 2px solid #ff4444; border-radius: 8px;">
+                    <h4 style="color: #d32f2f; margin: 0 0 10px 0;">Bit Flip Detected!</h4>
+                    <div id="error-location" style="font-family: monospace; margin-bottom: 10px;"></div>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px; background: white;">
+                        <thead>
+                            <tr>
+                                <th style="padding: 8px; border: 1px solid #ddd; background: #f5f5f5;">State</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; background: #f5f5f5;">Bit Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 8px; border: 1px solid #ddd;">Before Flip</td>
+                                <td id="before-flip" style="padding: 8px; border: 1px solid #ddd; font-family: monospace;"></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px; border: 1px solid #ddd;">After Flip</td>
+                                <td id="after-flip" style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #d32f2f;"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <div class="crc-panel">
@@ -647,14 +771,62 @@
             socket.onmessage = function(event) {
                 try {
                     const message = JSON.parse(event.data);
-                    if (message.type === 'compare') {
-                        const differingBits = handleComparisonData(message.originalBinaryData, message.receivedBinaryData);
-                        updateOriginalMessage({ ...message, differingBits });
-                        updateReceivedMessage({ ...message, differingBits });
-                    } else {
-                        handleSimulationEvent(message);
+                    console.log('Received WebSocket message:', message);
+
+                    if (message.type === 'error') {
+                        // Show error info panel
+                        const errorPanel = document.getElementById('error-info-panel');
+                        const errorLocation = document.getElementById('error-location');
+                        const beforeFlip = document.getElementById('before-flip');
+                        const afterFlip = document.getElementById('after-flip');
+
+                        if (errorPanel && errorLocation && beforeFlip && afterFlip) {
+                            // Calculate correct bit position (7 - original position because bits are displayed right to left)
+                            const correctedBitPosition = 7 - message.data.bit;
+
+                            errorPanel.style.display = 'block';
+                            errorLocation.innerHTML = `
+                                <div style="background: #fff; padding: 10px; border-radius: 4px; margin-bottom: 10px;">
+                                    <div style="font-size: 16px; color: #d32f2f; margin-bottom: 5px;">
+                                        <strong>🔍 Error Location Details:</strong>
+                                    </div>
+                                    <div style="margin-left: 10px;">
+                                        <div>📍 Overall Position: ${message.data.position}</div>
+                                        <div>📦 Byte: ${message.data.byte}</div>
+                                        <div>🔢 Bit Position in Byte: ${correctedBitPosition} (from right to left)</div>
+                                    </div>
+                                </div>
+                            `;
+
+                            // Add bit position indicators above the binary representation
+                            let binaryWithPosition = '';
+                            const originalByte = message.data.originalByte;
+                            const modifiedByte = message.data.modifiedByte;
+
+                            // Add position numbers
+                            binaryWithPosition = '7 6 5 4 3 2 1 0\n';
+
+                            beforeFlip.innerHTML = `
+                                <div style="font-family: monospace;">
+                                    <div style="color: #666; margin-bottom: 4px;">${binaryWithPosition}</div>
+                                    <div style="color: #2196F3;">${originalByte}</div>
+                                </div>
+                            `;
+
+                            afterFlip.innerHTML = `
+                                <div style="font-family: monospace;">
+                                    <div style="color: #666; margin-bottom: 4px;">${binaryWithPosition}</div>
+                                    <div style="color: #d32f2f;">${modifiedByte}</div>
+                                </div>
+                            `;
+
+                            errorPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
                     }
+
+                    handleSimulationEvent(message);
                 } catch (e) {
+                    console.error('Error parsing WebSocket message:', e);
                     addLog('Error parsing message: ' + e.message, 'error');
                 }
             };
@@ -662,47 +834,70 @@
 
         // Handle simulation events from NS-3
         function handleSimulationEvent(event) {
-            console.log('Received event:', event);
+            console.log('Handling event:', event.type); // Debug log
 
-            switch(event.type) {
-                 case 'performance':
-                    updatePerformanceMetrics(event.data);
-                    break;
-                case 'start':
-                    // Clear previous data when simulation starts
-                    clearPreviousData();
-                    addLog('Simulation started', 'success');
-                    break;
+            try {
+                switch(event.type) {
+                    case 'performance':
+                        if (event.data) {
+                            updatePerformanceMetrics(event.data);
+                        }
+                        break;
+                    case 'start':
+                        clearPreviousData();
+                        // Hide error panel on new simulation
+                        const errorPanelStart = document.getElementById('error-info-panel');
+                        if (errorPanelStart) {
+                            errorPanelStart.style.display = 'none';
+                        }
+                        addLog('Simulation started', 'success');
+                        break;
 
-                case 'end':
-                    addLog('Simulation completed', 'success');
-                    break;
+                    case 'end':
+                        addLog('Simulation completed', 'success');
+                        break;
 
-                case 'network':
-                    updateNetworkVisualization(event.data);
-                    break;
+                    case 'network':
+                        if (event.data) {
+                            updateNetworkVisualization(event.data);
+                        }
+                        break;
 
-                case 'original':
-                    updateOriginalMessage(event.data);
-                    break;
+                    case 'original':
+                        if (event.data) {
+                            updateOriginalMessage(event.data);
+                        }
+                        break;
 
-                case 'error':
-                    errorInjected = true;
-                    errorPosition = event.data;
-                    addLog(`Error injected at bit position: ${errorPosition.position} (Byte: ${errorPosition.byte}, Bit: ${errorPosition.bit})`, 'error');
-                    showErrorIndicator(errorPosition);
-                    break;
+                    case 'error':
+                        errorInjected = true;
+                        errorPosition = event.data;
+                        addLog(`Error injected at bit position: ${errorPosition.position} (Byte: ${errorPosition.byte}, Bit: ${errorPosition.bit})`, 'error');
+                        showErrorIndicator(errorPosition);
 
-                case 'transmission':
-                    showPacketTransmission();
-                    break;
+                        // Make sure error panel is visible
+                        const errorPanel = document.getElementById('error-info-panel');
+                        if (errorPanel) {
+                            errorPanel.style.display = 'block';
+                        }
+                        break;
 
-                case 'received':
-                    updateReceivedMessage(event.data);
-                    break;
+                    case 'transmission':
+                        showPacketTransmission();
+                        break;
 
-                default:
-                    addLog('Unknown event: ' + event.type);
+                    case 'received':
+                        if (event.data) {
+                            updateReceivedMessage(event.data);
+                        }
+                        break;
+
+                    default:
+                        addLog('Unknown event: ' + event.type);
+                }
+            } catch (error) {
+                console.error('Error in handleSimulationEvent:', error);
+                addLog('Error handling event: ' + error.message, 'error');
             }
         }
 
@@ -731,91 +926,104 @@
         }
 
         function updateBinaryVisualization(container, binaryData, errorBitPositions = [], highlightType = '') {
-            container.innerHTML = '';
-            if (!binaryData) return;
-
-            const allBits = binaryData.replace(/[\s\n\\n]/g, '');
-
-            const headerRow = document.createElement('div');
-            headerRow.className = 'bit-row bit-header';
-            for (let i = 0; i < 8; i++) {
-                const headerBit = document.createElement('div');
-                headerBit.className = 'bit bit-header';
-                headerBit.textContent = i;
-                headerRow.appendChild(headerBit);
+            if (!container || !binaryData) {
+                console.warn('Missing container or binary data');
+                return;
             }
-            container.appendChild(headerRow);
 
-            for (let i = 0; i < allBits.length; i += 8) {
-                const byte = allBits.slice(i, i + 8);
-                if (byte.length === 8) {
-                    const currentRow = document.createElement('div');
-                    currentRow.className = 'bit-row';
+            try {
+                container.innerHTML = '';
+                const allBits = String(binaryData).replace(/[\s\n\\n]/g, '');
 
-                    const byteLabel = document.createElement('div');
-                    byteLabel.className = 'byte-label';
-                    byteLabel.textContent = `Byte ${i/8}:`;
-                    currentRow.appendChild(byteLabel);
+                // Create bit rows
+                for (let i = 0; i < allBits.length; i += 8) {
+                    const byte = allBits.slice(i, i + 8);
+                    if (byte.length === 8) {
+                        const row = document.createElement('div');
+                        row.className = 'bit-row';
+                        row.style.marginBottom = '30px'; // Add space for the FLIPPED label
 
-                    container.appendChild(currentRow);
+                        const byteLabel = document.createElement('div');
+                        byteLabel.className = 'byte-label';
+                        byteLabel.textContent = `Byte ${Math.floor(i/8)}:`;
+                        row.appendChild(byteLabel);
 
-                    for (let j = 0; j < 8; j++) {
-                        const bit = document.createElement('div');
-                        const globalBitPosition = i + j;
-                        bit.className = `bit bit-${byte[j]}`;
+                        for (let j = 0; j < 8; j++) {
+                            const bit = document.createElement('div');
+                            const globalBitPosition = i + j;
+                            const bitValue = byte[j] || '0';
+                            bit.className = `bit bit-${bitValue}`;
+                            bit.textContent = bitValue;
 
-                        if (errorBitPositions && errorBitPositions.includes(globalBitPosition)) {
-                            bit.className = `bit bit-${byte[j]} ${highlightType === 'original' ? 'bit-original' : 'bit-error'}`;
-                            bit.title = `Bit ${globalBitPosition} differs from ${highlightType === 'original' ? 'received' : 'original'} data`;
-                            bit.style.animation = 'pulse 1s infinite';
-                            bit.style.border = '2px solid yellow';
-                            bit.style.boxShadow = '0 0 10px yellow';
+                            if (Array.isArray(errorBitPositions) && errorBitPositions.includes(globalBitPosition)) {
+                                bit.className += ' marked-bit';
+                                // Add position info
+                                const posInfo = document.createElement('div');
+                                posInfo.style.position = 'absolute';
+                                posInfo.style.top = '-35px';
+                                posInfo.style.left = `${bit.offsetLeft}px`;
+                                posInfo.style.color = '#ff0000';
+                                posInfo.style.fontSize = '12px';
+                                posInfo.style.whiteSpace = 'nowrap';
+                                posInfo.textContent = `Bit ${globalBitPosition % 8}`;
+                                row.appendChild(posInfo);
+                            }
+
+                            row.appendChild(bit);
                         }
-
-                        bit.textContent = byte[j];
-                        currentRow.appendChild(bit);
+                        container.appendChild(row);
                     }
                 }
+            } catch (error) {
+                console.error('Error in updateBinaryVisualization:', error);
+                addLog('Error updating visualization: ' + error.message, 'error');
             }
         }
 
         function updateOriginalMessage(data) {
             document.getElementById('original-message').textContent = data.message;
-            document.getElementById('original-crc8').textContent = data.crc8 || '-';
-            document.getElementById('original-crc16').textContent = data.crc16 || '-';
-            document.getElementById('original-crc32').textContent = data.crc32 || '-';
-
             const bitsContainer = document.getElementById('original-bits');
             const differingBits = data.differingBits || [];
             updateBinaryVisualization(bitsContainer, data.binaryData, differingBits, 'original');
         }
 
         function updateReceivedMessage(data) {
-            const crcType = data.crcType.toLowerCase().replace('-', '');
-            const panel = document.getElementById(`${crcType}-panel`);
-            if (!panel) return;
+            try {
+                if (!data) return;
 
-            const messageDiv = panel.querySelector('.received-message');
-            const verificationDiv = panel.querySelector('.crc-verification');
-            const bitsContainer = panel.querySelector('.bit-visualization');
-            const resultDiv = panel.querySelector('.crc-result');
+                const crcType = (data.crcType || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+                const panel = document.getElementById(`${crcType}-panel`);
+                if (!panel) return;
 
-            messageDiv.textContent = data.message;
-            verificationDiv.textContent = `Received: ${data.receivedCRC}, Computed: ${data.computedCRC}`;
+                const messageDiv = panel.querySelector('.received-message');
+                const verificationDiv = panel.querySelector('.crc-verification');
+                const bitsContainer = panel.querySelector('.bit-visualization');
+                const resultDiv = panel.querySelector('.crc-result');
 
-            const differingBits = data.differingBits || [];
-            updateBinaryVisualization(bitsContainer, data.binaryData, differingBits, 'received');
+                if (messageDiv) messageDiv.textContent = data.message || 'No message';
+                if (verificationDiv) verificationDiv.textContent = `Received: ${data.receivedCRC || '-'}, Computed: ${data.computedCRC || '-'}`;
 
-            if (data.crcMatch) {
-                resultDiv.innerHTML = `
-                    <div class="crc-match">
-                        <span style="font-size: 24px;">✓</span> CRC MATCH - No errors detected
-                    </div>`;
-            } else {
-                resultDiv.innerHTML = `
-                    <div class="crc-error">
-                        <span style="font-size: 24px;">⚠</span> CRC MISMATCH - Error detected!
-                    </div>`;
+                const differingBits = data.differingBits || [];
+                if (bitsContainer) {
+                    updateBinaryVisualization(bitsContainer, data.binaryData, differingBits, 'received');
+                }
+
+                if (resultDiv) {
+                    if (data.crcMatch) {
+                        resultDiv.innerHTML = `
+                            <div class="crc-match">
+                                <span style="font-size: 24px;">✓</span> CRC MATCH - No errors detected
+                            </div>`;
+                    } else {
+                        resultDiv.innerHTML = `
+                            <div class="crc-error">
+                                <span style="font-size: 24px;">⚠</span> CRC MISMATCH - Error detected!
+                            </div>`;
+                    }
+                }
+            } catch (error) {
+                console.error('Error in updateReceivedMessage:', error);
+                addLog('Error updating received message: ' + error.message, 'error');
             }
         }
 
@@ -1186,9 +1394,6 @@
 
             // Clear original and received message displays
             document.getElementById('original-message').textContent = 'Waiting for transmission...';
-            document.getElementById('original-crc8').textContent = '-';
-            document.getElementById('original-crc16').textContent = '-';
-            document.getElementById('original-crc32').textContent = '-';
             document.getElementById('original-bits').innerHTML = '';
 
             document.getElementById('crc8-panel').querySelector('.received-message').textContent = 'Waiting for reception...';
@@ -1205,6 +1410,12 @@
             document.getElementById('crc32-panel').querySelector('.crc-verification').textContent = '-';
             document.getElementById('crc32-panel').querySelector('.bit-visualization').innerHTML = '';
             document.getElementById('crc32-panel').querySelector('.crc-result').innerHTML = '';
+
+            // Clear error info panel
+            const errorPanel = document.getElementById('error-info-panel');
+            if (errorPanel) {
+                errorPanel.style.display = 'none';
+            }
 
             // Clear logs
             document.getElementById('logs').innerHTML = '';
@@ -1239,6 +1450,25 @@
 
         // Connect to WebSocket server
         connectWebSocket();
+
+        // Add this function to check if elements exist
+        function checkErrorPanelElements() {
+            const elements = {
+                panel: document.getElementById('error-info-panel'),
+                location: document.getElementById('error-location'),
+                beforeFlip: document.getElementById('before-flip'),
+                afterFlip: document.getElementById('after-flip')
+            };
+
+            console.log('Error panel elements check:', elements); // Debug log
+            return elements;
+        }
+
+        // Call this when the page loads
+        window.addEventListener('load', function() {
+            console.log('Page loaded, checking error panel elements:');
+            checkErrorPanelElements();
+        });
     </script>
 </body>
 </html>
