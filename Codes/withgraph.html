@@ -4,31 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <title>CRC Simulation Visualization</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f0f2f5;
-            color: #333;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #e6e6e6;
+            min-height: 100vh;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            background-color: white;
+            background: linear-gradient(to right, rgba(22, 33, 62, 0.95), rgba(35, 48, 86, 0.95));
             padding: 25px;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
         }
 
         h1 {
             text-align: center;
-            color: #2c3e50;
+            color: #fff;
             margin-bottom: 30px;
             font-size: 2.2rem;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            text-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+            background: linear-gradient(120deg, #89f7fe, #66a6ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .network-visualization {
@@ -38,8 +45,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px dashed #ccc;
-            background-color: #f8f9fa;
+            border-bottom: 2px dashed #533483;
+            background-color: #0f3460;
             border-radius: 10px;
             padding: 20px;
         }
@@ -55,7 +62,7 @@
             align-items: center;
             color: white;
             font-weight: bold;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
             transition: transform 0.3s ease;
         }
 
@@ -92,7 +99,7 @@
             align-items: center;
             font-weight: bold;
             font-size: 14px;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
             transition: left 2s ease-in-out;
             color: #333;
         }
@@ -106,32 +113,38 @@
             margin-top: 30px;
             height: 250px;
             overflow-y: auto;
-            border: 1px solid #ddd;
-            padding: 15px;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(15, 52, 96, 0.95), rgba(22, 33, 62, 0.95));
+            border-radius: 12px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
         }
 
         .log-entry {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-            font-family: monospace;
-            transition: background-color 0.2s;
+            padding: 12px;
+            border-bottom: 1px solid rgba(83, 52, 131, 0.3);
+            font-family: 'Courier New', monospace;
+            color: #e6e6e6;
+            text-shadow: 0 0 5px rgba(230, 230, 230, 0.1);
+            transition: all 0.3s ease;
         }
 
         .log-entry:hover {
-            background-color: #f0f0f0;
+            background: rgba(26, 26, 46, 0.5);
+            transform: translateX(5px);
         }
 
         .log-entry-error {
-            background-color: #ffecec;
-            color: #e74c3c;
+            background: linear-gradient(135deg, rgba(74, 28, 28, 0.8), rgba(106, 45, 45, 0.8));
+            color: #ff6b6b;
+            text-shadow: 0 0 10px rgba(255, 107, 107, 0.3);
         }
 
         .log-entry-success {
-            background-color: #efffec;
-            color: #2ecc71;
+            background: linear-gradient(135deg, rgba(28, 74, 28, 0.8), rgba(45, 106, 45, 0.8));
+            color: #6bff6b;
+            text-shadow: 0 0 10px rgba(107, 255, 107, 0.3);
         }
 
         .crc-details {
@@ -143,66 +156,84 @@
         .crc-panel {
             flex: 1;
             padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #ffffff, #f8f9fa);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, rgba(22, 33, 62, 0.95), rgba(35, 48, 86, 0.95));
+            border-radius: 12px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .crc-panel:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.45);
         }
 
         .crc-panel h3 {
-            margin-top: 0;
-            color: #2c3e50;
+            color: #fff;
             border-bottom: 2px solid #3498db;
             padding-bottom: 10px;
             font-size: 1.3rem;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            text-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+            background: linear-gradient(120deg, #89f7fe, #66a6ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .crc-match {
-            color: #2ecc71;
-            font-weight: bold;
-            font-size: 1.1rem;
+            background: linear-gradient(135deg, #1c4a1c, #2d6a2d);
+            color: #6bff6b;
+            text-shadow: 0 0 10px rgba(107, 255, 107, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
         .crc-error {
-            color: #e74c3c;
-            font-weight: bold;
-            font-size: 1.1rem;
+            background: linear-gradient(135deg, #4a1c1c, #6a2d2d);
+            color: #ff6b6b;
+            text-shadow: 0 0 10px rgba(255, 107, 107, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
         .controls {
             margin: 20px 0;
-            padding: 15px;
-            background-color: #f0f2f5;
-            border-radius: 8px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(15, 52, 96, 0.95), rgba(22, 33, 62, 0.95));
+            border-radius: 12px;
             display: flex;
             gap: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
         }
 
         button {
-            padding: 10px 20px;
-            background-color: #3498db;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 15px;
             font-weight: bold;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
         }
 
         button:hover {
-            background-color: #2980b9;
+            background: linear-gradient(135deg, #2980b9, #3498db);
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
 
         .bit-visualization {
@@ -210,7 +241,7 @@
             flex-direction: column;
             margin-top: 15px;
             padding: 10px;
-            background-color: #f0f0f0;
+            background-color: #0f3460;
             border-radius: 6px;
             max-height: 200px;
             overflow-y: auto;
@@ -223,7 +254,7 @@
         .bit-row {
             display: flex;
             padding: 4px;
-            background-color: rgba(255, 255, 255, 0.5);
+            background-color: rgba(22, 33, 62, 0.7);
             border-radius: 4px;
             width: 100%;
             justify-content: center;
@@ -243,19 +274,19 @@
             font-size: 14px;
             border-radius: 3px;
             transition: all 0.3s ease;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
             position: relative;
         }
 
         .bit-0 {
-            background: linear-gradient(135deg, #e0e0e0, #bdbdbd);
-            color: #424242;
+            background: linear-gradient(135deg, #533483, #e94560);
+            color: white;
             border: 1px solid #9e9e9e;
         }
 
         .bit-1 {
-            background: linear-gradient(135deg, #90caf9, #64b5f6);
-            color: #1565c0;
+            background: linear-gradient(135deg, #e94560, #533483);
+            color: white;
             border: 1px solid #1976d2;
         }
 
@@ -312,7 +343,7 @@
 
         .bit:hover {
             transform: scale(1.1);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
             z-index: 3;
         }
 
@@ -353,66 +384,74 @@
             color: white;
             font-weight: bold;
             font-size: 18px;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
             z-index: 10;
             animation: pulse 1s infinite;
         }
-        /*extra style*/
 
-         #performance-metrics {
+        #performance-metrics {
             margin-top: 15px;
         }
+
         #performance-table {
             width: 100%;
             border-collapse: collapse;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
             border-radius: 8px;
             overflow: hidden;
         }
+
         #performance-table th,
         #performance-table td {
-            border: 1px solid #ddd;
+            border: 1px solid #533483;
             padding: 12px;
             text-align: center;
-        }
-        #performance-table th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-        #performance-table tr:hover {
-            background-color: #f5f5f5;
+            color: #e6e6e6;
         }
 
-        /* New chart container styles */
+        #performance-table th {
+            background-color: #0f3460;
+            font-weight: bold;
+            color: #e6e6e6;
+        }
+
+        #performance-table tr:hover {
+            background-color: #1a1a2e;
+        }
+
         .chart-container {
             display: flex;
             justify-content: space-between;
             margin-top: 25px;
             gap: 20px;
         }
+
         .chart-wrapper {
             width: 48%;
             height: 300px;
-            background-color: white;
+            background-color: #16213e;
             border-radius: 8px;
             padding: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
+
         #comparative-analysis {
             margin-top: 25px;
             padding: 20px;
-            background-color: #f9f9f9;
+            background-color: #0f3460;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            color: #e6e6e6;
         }
+
         #comparative-analysis h4 {
-            color: #2c3e50;
+            color: #e6e6e6;
             margin-top: 0;
             font-size: 1.2rem;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #533483;
             padding-bottom: 10px;
         }
+
         #comparative-analysis p {
             margin: 10px 0;
             font-size: 1.1rem;
@@ -433,15 +472,15 @@
         .crc-type-panel {
             margin-bottom: 20px;
             padding: 15px;
-            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            background: linear-gradient(135deg, #16213e, #0f3460);
             border-radius: 8px;
-            border: 1px solid #e0e0e0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #533483;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
         .crc-type-panel h4 {
             margin: 0 0 15px 0;
-            color: #2c3e50;
+            color: #e6e6e6;
             font-size: 1.1rem;
             border-bottom: 2px solid #3498db;
             padding-bottom: 8px;
@@ -450,59 +489,39 @@
         .crc-type-panel .received-message {
             margin-bottom: 10px;
             padding: 8px;
-            background-color: #f8f9fa;
+            background-color: #0f3460;
             border-radius: 4px;
             font-family: monospace;
+            color: #e6e6e6;
         }
 
         .crc-type-panel .crc-verification {
             margin-bottom: 15px;
             padding: 8px;
-            background-color: #edf2f7;
+            background-color: #1a1a2e;
             border-radius: 4px;
             font-family: monospace;
-            color: #2c3e50;
+            color: #e6e6e6;
         }
 
         .crc-type-panel .bit-visualization {
             margin: 10px 0;
             padding: 10px;
-            background-color: #f0f0f0;
+            background-color: #0f3460;
             border-radius: 6px;
             overflow-x: auto;
             white-space: nowrap;
             scrollbar-width: thin;
-            scrollbar-color: #3498db #f0f0f0;
+            scrollbar-color: #3498db #0f3460;
         }
 
         .crc-type-panel .crc-result {
             margin-top: 10px;
         }
 
-        .crc-match {
-            padding: 10px;
-            background-color: #e8f5e9;
-            border-radius: 6px;
-            color: #2e7d32;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .crc-error {
-            padding: 10px;
-            background-color: #ffebee;
-            border-radius: 6px;
-            color: #c62828;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* Add these new styles */
         .bit-header {
-            background: linear-gradient(135deg, #f5f5f5, #e0e0e0) !important;
-            color: #424242 !important;
+            background: linear-gradient(135deg, #533483, #e94560) !important;
+            color: white !important;
             font-weight: bold;
             border-bottom: 2px solid #9e9e9e;
             text-transform: uppercase;
@@ -514,13 +533,13 @@
             padding: 4px;
             text-align: right;
             font-family: monospace;
-            color: #424242;
+            color: #e6e6e6;
             font-size: 12px;
             font-weight: bold;
             margin-right: 8px;
-            background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+            background: linear-gradient(135deg, #533483, #e94560);
             border-radius: 4px;
-            border: 1px solid #e0e0e0;
+            border: 1px solid #533483;
         }
 
         .bit-flipped {
@@ -581,7 +600,6 @@
             opacity: 1;
         }
 
-        /* Add this new style for marking flipped bits */
         .marked-bit {
             position: relative;
             background-color: #ff0000 !important;
@@ -610,9 +628,519 @@
             font-weight: bold;
             white-space: nowrap;
         }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px rgba(52, 152, 219, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(52, 152, 219, 0.8); }
+            100% { box-shadow: 0 0 5px rgba(52, 152, 219, 0.5); }
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .theme-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 50%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .theme-switcher:hover {
+            transform: scale(1.1);
+        }
+        
+        .theme-switcher i {
+            font-size: 24px;
+            color: #3498db;
+        }
+        
+        .dark-theme {
+            background-color: #1a1a2e;
+            color: #e6e6e6;
+        }
+        
+        .dark-theme .container {
+            background-color: #16213e;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .dark-theme .crc-panel {
+            background: linear-gradient(135deg, #16213e, #0f3460);
+            border-color: #533483;
+        }
+        
+        .dark-theme .bit-0 {
+            background: linear-gradient(135deg, #533483, #e94560);
+            color: white;
+        }
+        
+        .dark-theme .bit-1 {
+            background: linear-gradient(135deg, #e94560, #533483);
+            color: white;
+        }
+        
+        .interactive-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            z-index: 1000;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            max-width: 250px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .interactive-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+        }
+        
+        .floating-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+        
+        .floating-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #3498db;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .floating-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        
+        .floating-button i {
+            font-size: 20px;
+        }
+        
+        .progress-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 5px;
+            background: linear-gradient(to right, #3498db, #2ecc71);
+            z-index: 1001;
+            transition: width 0.3s ease;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2ecc71;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1002;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            max-width: 80%;
+            text-align: center;
+        }
+        
+        .notification.show {
+            opacity: 1;
+        }
+        
+        .notification.error {
+            background: #e74c3c;
+        }
+        
+        .notification.warning {
+            background: #f39c12;
+        }
+        
+        .notification.info {
+            background: #3498db;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1003;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #aaa;
+            transition: color 0.3s ease;
+        }
+        
+        .modal-close:hover {
+            color: #333;
+        }
+        
+        .dark-theme .modal-content {
+            background: #16213e;
+            color: #e6e6e6;
+        }
+        
+        .dark-theme .modal-close:hover {
+            color: #e6e6e6;
+        }
+        
+        .help-icon {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #3498db;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .help-icon:hover {
+            transform: scale(1.1);
+            background: #2980b9;
+        }
+        
+        .help-icon i {
+            font-size: 24px;
+        }
+        
+        .bit-position-box {
+            transition: all 0.3s ease;
+        }
+        
+        .bit-position-box:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 15px rgba(255, 68, 68, 0.7);
+        }
+        
+        .animated-node {
+            animation: pulse 2s infinite;
+        }
+        
+        .animated-packet {
+            animation: glow 2s infinite;
+        }
+        
+        .animated-error {
+            animation: pulse 1s infinite;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: rotate 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+        
+        .tooltip-trigger {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip-trigger:hover .tooltip-content {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .tooltip-content {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .tooltip-content::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+        }
+
+        #error-info-panel {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a2e, #2a1215);
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px 0 rgba(255, 68, 68, 0.2);
+            backdrop-filter: blur(4px);
+            animation: panelGlow 2s infinite alternate;
+        }
+
+        @keyframes panelGlow {
+            from {
+                box-shadow: 0 0 20px rgba(255, 68, 68, 0.2);
+            }
+            to {
+                box-shadow: 0 0 30px rgba(255, 68, 68, 0.4);
+            }
+        }
+
+        .error-location-details {
+            background: linear-gradient(135deg, #1a1a2e, #2d1f3d);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .error-location-details strong {
+            color: #ff6b6b;
+            text-shadow: 0 0 10px rgba(255, 107, 107, 0.3);
+            font-size: 1.1em;
+        }
+
+        .error-location-details div {
+            color: #e6e6e6;
+            margin: 8px 0;
+            padding-left: 20px;
+            font-size: 1.05em;
+            text-shadow: 0 0 5px rgba(230, 230, 230, 0.1);
+        }
+
+        .error-detail-box {
+            flex: 1;
+            background: linear-gradient(135deg, #1a1a2e, #2d1f3d);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(83, 52, 131, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .error-detail-box:hover {
+            transform: translateY(-5px);
+        }
+
+        .binary-representation {
+            background: linear-gradient(135deg, #16213e, #1f2b4d);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .bit-position-numbers {
+            color: #8a8d91;
+            margin-bottom: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            text-shadow: 0 0 5px rgba(138, 141, 145, 0.3);
+        }
+
+        .binary-value {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;
+            letter-spacing: 2px;
+        }
+
+        .binary-value.original {
+            color: #00bcd4;
+            text-shadow: 0 0 10px rgba(0, 188, 212, 0.3);
+        }
+
+        .binary-value.modified {
+            color: #ff4444;
+            text-shadow: 0 0 10px rgba(255, 68, 68, 0.3);
+        }
+
+        #bit-position-viz {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+            padding: 10px;
+            background: linear-gradient(135deg, #1a1a2e, #2d1f3d);
+            border-radius: 12px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .bit-position-box {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            color: #e6e6e6;
+            background: linear-gradient(135deg, #2d1f3d, #1a1a2e);
+            border: 1px solid rgba(83, 52, 131, 0.3);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .bit-position-box:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .bit-position-box.active {
+            background: linear-gradient(135deg, #ff4444, #ff6b6b);
+            color: white;
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.4);
+            animation: activeBitGlow 1.5s infinite alternate;
+        }
+
+        @keyframes activeBitGlow {
+            from {
+                box-shadow: 0 0 20px rgba(255, 68, 68, 0.4);
+            }
+            to {
+                box-shadow: 0 0 30px rgba(255, 68, 68, 0.6);
+            }
+        }
     </style>
 </head>
 <body>
+    <div class="progress-indicator" id="progress-bar"></div>
+    <div class="theme-switcher" id="theme-switcher">
+        <i class="fas fa-sun"></i>
+    </div>
+    <div class="help-icon" id="help-icon">
+        <i class="fas fa-question"></i>
+    </div>
+    <div class="floating-controls">
+        <div class="floating-button" id="zoom-in">
+            <i class="fas fa-search-plus"></i>
+        </div>
+        <div class="floating-button" id="zoom-out">
+            <i class="fas fa-search-minus"></i>
+        </div>
+        <div class="floating-button" id="reset-view">
+            <i class="fas fa-undo"></i>
+        </div>
+    </div>
+    <div class="notification" id="notification"></div>
+    <div class="modal" id="help-modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2>CRC Simulation Help</h2>
+            <div class="help-content">
+                <h3>What is CRC?</h3>
+                <p>Cyclic Redundancy Check (CRC) is an error-detecting code commonly used to detect accidental changes to raw data during transmission or storage.</p>
+                
+                <h3>How to Use This Simulation</h3>
+                <ol>
+                    <li>Click "Start New Simulation" to begin</li>
+                    <li>Enter your message when prompted</li>
+                    <li>Choose whether to inject an error</li>
+                    <li>Observe how different CRC types detect errors</li>
+                </ol>
+                
+                <h3>Understanding the Visualization</h3>
+                <ul>
+                    <li><strong>Original Message:</strong> The data you entered</li>
+                    <li><strong>Received Messages:</strong> What the receiver gets after transmission</li>
+                    <li><strong>Error Info Panel:</strong> Shows details about any injected errors</li>
+                    <li><strong>Performance Metrics:</strong> Compares different CRC types</li>
+                </ul>
+                
+                <h3>Tips</h3>
+                <ul>
+                    <li>Try different messages to see how CRC performance varies</li>
+                    <li>Compare error detection rates between CRC-8, CRC-16, and CRC-32</li>
+                    <li>Use the zoom controls to examine bit patterns more closely</li>
+                </ul>
+            </div>
+        </div>
+    </div>
     <div class="container">
         <h1>CRC-32 Simulation Visualization</h1>
 
@@ -642,24 +1170,20 @@
                 <div id="error-info-panel" style="display: none; margin-top: 20px; padding: 15px; background-color: #ffebee; border: 2px solid #ff4444; border-radius: 8px;">
                     <h4 style="color: #d32f2f; margin: 0 0 10px 0;">Bit Flip Detected!</h4>
                     <div id="error-location" style="font-family: monospace; margin-bottom: 10px;"></div>
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px; background: white;">
-                        <thead>
-                            <tr>
-                                <th style="padding: 8px; border: 1px solid #ddd; background: #f5f5f5;">State</th>
-                                <th style="padding: 8px; border: 1px solid #ddd; background: #f5f5f5;">Bit Value</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td style="padding: 8px; border: 1px solid #ddd;">Before Flip</td>
-                                <td id="before-flip" style="padding: 8px; border: 1px solid #ddd; font-family: monospace;"></td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 8px; border: 1px solid #ddd;">After Flip</td>
-                                <td id="after-flip" style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #d32f2f;"></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="error-details-container" style="display: flex; gap: 15px; margin-bottom: 15px;">
+                        <div class="error-detail-box" style="flex: 1; background: white; padding: 10px; border-radius: 6px; border: 1px solid #ddd;">
+                            <h5 style="margin: 0 0 8px 0; color: #333;">Original Byte</h5>
+                            <div id="before-flip" style="font-family: monospace; padding: 8px; background: #f5f5f5; border-radius: 4px;"></div>
+                        </div>
+                        <div class="error-detail-box" style="flex: 1; background: white; padding: 10px; border-radius: 6px; border: 1px solid #ddd;">
+                            <h5 style="margin: 0 0 8px 0; color: #333;">Modified Byte</h5>
+                            <div id="after-flip" style="font-family: monospace; padding: 8px; background: #f5f5f5; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                    <div class="error-visualization" style="margin-top: 15px; padding: 10px; background: white; border-radius: 6px; border: 1px solid #ddd;">
+                        <h5 style="margin: 0 0 8px 0; color: #333;">Bit Position Visualization</h5>
+                        <div id="bit-position-viz" style="display: flex; justify-content: center; gap: 5px; margin-top: 10px;"></div>
+                    </div>
                 </div>
             </div>
 
@@ -689,45 +1213,41 @@
             </div>
         </div>
 
-           <!-- Existing HTML -->
-    <div class="crc-panel">
-        <h3>Performance Metrics</h3>
-        <div id="performance-metrics">
-            <table id="performance-table">
-                <thead>
-                    <tr>
-                        <th>CRC Type</th>
-                        <th>CRC Value</th>
-                        <th>Execution Time (ns)</th>
-                        <th>Error Detection Rate</th>
-                        <th>Data Overhead (%)</th>
-                        <th>Error Detection</th>
-                    </tr>
-                </thead>
-                <tbody id="performance-body"></tbody>
-            </table>
-        </div>
-
-        <!-- New chart containers -->
-        <div class="chart-container">
-            <div class="chart-wrapper">
-                <canvas id="executionTimeChart"></canvas>
+        <div class="crc-panel">
+            <h3>Performance Metrics</h3>
+            <div id="performance-metrics">
+                <table id="performance-table">
+                    <thead>
+                        <tr>
+                            <th>CRC Type</th>
+                            <th>CRC Value</th>
+                            <th>Execution Time (ns)</th>
+                            <th>Error Detection Rate</th>
+                            <th>Data Overhead (%)</th>
+                            <th>Error Detection</th>
+                        </tr>
+                    </thead>
+                    <tbody id="performance-body"></tbody>
+                </table>
             </div>
-            <div class="chart-wrapper">
-                <canvas id="errorDetectionRateChart"></canvas>
+
+            <div class="chart-container">
+                <div class="chart-wrapper">
+                    <canvas id="executionTimeChart"></canvas>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="errorDetectionRateChart"></canvas>
+                </div>
             </div>
-        </div>
 
-        <div class="chart-container">
-            <div class="chart-wrapper">
-                <canvas id="dataOverheadChart"></canvas>
+            <div class="chart-container">
+                <div class="chart-wrapper">
+                    <canvas id="dataOverheadChart"></canvas>
+                </div>
             </div>
+
+            <div id="comparative-analysis"></div>
         </div>
-
-        <!-- Comparative Analysis Section -->
-        <div id="comparative-analysis"></div>
-    </div>
-
 
         <div class="log-container" id="logs">
             <div class="log-entry">System initialized. Waiting for packets...</div>
@@ -735,13 +1255,11 @@
     </div>
 
     <script>
-        // WebSocket connection
         let socket;
         let packetCounter = 0;
         let errorInjected = false;
         let errorPosition = null;
-           // Store chart instances
-         let executionTimeChart = null;
+        let executionTimeChart = null;
         let errorDetectionRateChart = null;
         let dataOverheadChart = null;
 
@@ -753,19 +1271,27 @@
                 statusElement.textContent = 'Connected';
                 statusElement.style.color = '#2ecc71';
                 addLog('Connected to simulation server', 'success');
+                showNotification('Connected to simulation server', 'success');
+                
+                statusElement.style.animation = 'pulse 1s';
+                setTimeout(() => {
+                    statusElement.style.animation = '';
+                }, 1000);
             };
 
             socket.onclose = function() {
                 statusElement.textContent = 'Disconnected';
                 statusElement.style.color = '#e74c3c';
                 addLog('Disconnected from simulation server', 'error');
-                setTimeout(connectWebSocket, 2000); // Try to reconnect
+                showNotification('Disconnected from simulation server', 'error');
+                setTimeout(connectWebSocket, 2000);
             };
 
             socket.onerror = function(error) {
                 statusElement.textContent = 'Error';
                 statusElement.style.color = '#e74c3c';
                 addLog('WebSocket error: ' + error.message, 'error');
+                showNotification('WebSocket error occurred', 'error');
             };
 
             socket.onmessage = function(event) {
@@ -774,51 +1300,46 @@
                     console.log('Received WebSocket message:', message);
 
                     if (message.type === 'error') {
-                        // Show error info panel
                         const errorPanel = document.getElementById('error-info-panel');
                         const errorLocation = document.getElementById('error-location');
                         const beforeFlip = document.getElementById('before-flip');
                         const afterFlip = document.getElementById('after-flip');
+                        const bitPositionViz = document.getElementById('bit-position-viz');
 
-                        if (errorPanel && errorLocation && beforeFlip && afterFlip) {
-                            // Calculate correct bit position (7 - original position because bits are displayed right to left)
+                        if (errorPanel && errorLocation && beforeFlip && afterFlip && bitPositionViz) {
                             const correctedBitPosition = 7 - message.data.bit;
 
                             errorPanel.style.display = 'block';
                             errorLocation.innerHTML = `
-                                <div style="background: #fff; padding: 10px; border-radius: 4px; margin-bottom: 10px;">
-                                    <div style="font-size: 16px; color: #d32f2f; margin-bottom: 5px;">
+                                <div class="error-location-details">
+                                    <div style="font-size: 16px;">
                                         <strong>🔍 Error Location Details:</strong>
                                     </div>
-                                    <div style="margin-left: 10px;">
-                                        <div>📍 Overall Position: ${message.data.position}</div>
-                                        <div>📦 Byte: ${message.data.byte}</div>
-                                        <div>🔢 Bit Position in Byte: ${correctedBitPosition} (from right to left)</div>
-                                    </div>
+                                    <div>📍 Overall Position: ${message.data.position}</div>
+                                    <div>📦 Byte: ${message.data.byte}</div>
+                                    <div>🔢 Bit Position in Byte: ${correctedBitPosition} (from right to left)</div>
                                 </div>
                             `;
 
-                            // Add bit position indicators above the binary representation
-                            let binaryWithPosition = '';
-                            const originalByte = message.data.originalByte;
-                            const modifiedByte = message.data.modifiedByte;
-
-                            // Add position numbers
-                            binaryWithPosition = '7 6 5 4 3 2 1 0\n';
-
                             beforeFlip.innerHTML = `
-                                <div style="font-family: monospace;">
-                                    <div style="color: #666; margin-bottom: 4px;">${binaryWithPosition}</div>
-                                    <div style="color: #2196F3;">${originalByte}</div>
+                                <div class="binary-representation">
+                                    <div class="binary-value original">${message.data.originalByte}</div>
                                 </div>
                             `;
 
                             afterFlip.innerHTML = `
-                                <div style="font-family: monospace;">
-                                    <div style="color: #666; margin-bottom: 4px;">${binaryWithPosition}</div>
-                                    <div style="color: #d32f2f;">${modifiedByte}</div>
+                                <div class="binary-representation">
+                                    <div class="binary-value modified">${message.data.modifiedByte}</div>
                                 </div>
                             `;
+
+                            bitPositionViz.innerHTML = '';
+                            for (let i = 0; i < 8; i++) {
+                                const bitBox = document.createElement('div');
+                                bitBox.className = `bit-position-box ${i === correctedBitPosition ? 'active' : ''}`;
+                                bitBox.textContent = i;
+                                bitPositionViz.appendChild(bitBox);
+                            }
 
                             errorPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         }
@@ -832,9 +1353,8 @@
             };
         }
 
-        // Handle simulation events from NS-3
         function handleSimulationEvent(event) {
-            console.log('Handling event:', event.type); // Debug log
+            console.log('Handling event:', event.type);
 
             try {
                 switch(event.type) {
@@ -845,7 +1365,6 @@
                         break;
                     case 'start':
                         clearPreviousData();
-                        // Hide error panel on new simulation
                         const errorPanelStart = document.getElementById('error-info-panel');
                         if (errorPanelStart) {
                             errorPanelStart.style.display = 'none';
@@ -875,7 +1394,6 @@
                         addLog(`Error injected at bit position: ${errorPosition.position} (Byte: ${errorPosition.byte}, Bit: ${errorPosition.bit})`, 'error');
                         showErrorIndicator(errorPosition);
 
-                        // Make sure error panel is visible
                         const errorPanel = document.getElementById('error-info-panel');
                         if (errorPanel) {
                             errorPanel.style.display = 'block';
@@ -903,13 +1421,28 @@
 
         function updateNetworkVisualization(data) {
             if (data.nodes && data.nodes.length >= 2) {
+                const senderNode = document.getElementById('sender-node');
+                const receiverNode = document.getElementById('receiver-node');
+                
                 document.getElementById('sender-ip').textContent = data.nodes[0].ip;
                 document.getElementById('receiver-ip').textContent = data.nodes[1].ip;
+                
+                senderNode.classList.add('animated-node');
+                receiverNode.classList.add('animated-node');
+                
+                setTimeout(() => {
+                    senderNode.classList.remove('animated-node');
+                    receiverNode.classList.remove('animated-node');
+                }, 3000);
             }
 
             if (data.link) {
                 addLog(`Network setup: ${data.link.dataRate} link with ${data.link.delay} delay`);
+                showNotification(`Network setup: ${data.link.dataRate} link`, 'info');
             }
+            
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = '20%';
         }
 
         function handleComparisonData(originalData, receivedData) {
@@ -935,13 +1468,12 @@
                 container.innerHTML = '';
                 const allBits = String(binaryData).replace(/[\s\n\\n]/g, '');
 
-                // Create bit rows
                 for (let i = 0; i < allBits.length; i += 8) {
                     const byte = allBits.slice(i, i + 8);
                     if (byte.length === 8) {
                         const row = document.createElement('div');
                         row.className = 'bit-row';
-                        row.style.marginBottom = '30px'; // Add space for the FLIPPED label
+                        row.style.marginBottom = '30px';
 
                         const byteLabel = document.createElement('div');
                         byteLabel.className = 'byte-label';
@@ -957,7 +1489,6 @@
 
                             if (Array.isArray(errorBitPositions) && errorBitPositions.includes(globalBitPosition)) {
                                 bit.className += ' marked-bit';
-                                // Add position info
                                 const posInfo = document.createElement('div');
                                 posInfo.style.position = 'absolute';
                                 posInfo.style.top = '-35px';
@@ -967,6 +1498,9 @@
                                 posInfo.style.whiteSpace = 'nowrap';
                                 posInfo.textContent = `Bit ${globalBitPosition % 8}`;
                                 row.appendChild(posInfo);
+                                
+                                // Add tooltip with more details
+                                bit.title = `Error at position ${globalBitPosition} (Byte ${Math.floor(globalBitPosition/8)}, Bit ${globalBitPosition % 8})`;
                             }
 
                             row.appendChild(bit);
@@ -1040,11 +1574,13 @@
 
             if (errorInjected) {
                 packet.classList.add('packet-error');
+                packet.classList.add('animated-packet');
             }
 
             document.querySelector('.network-visualization').appendChild(packet);
 
             addLog(`Transmitting packet #${packetCounter}...`);
+            showNotification(`Transmitting packet #${packetCounter}`, 'info');
 
             // Animate packet movement
             setTimeout(() => {
@@ -1055,6 +1591,10 @@
             setTimeout(() => {
                 packet.remove();
             }, 2100);
+            
+            // Update progress bar
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = '40%';
         }
 
         function showErrorIndicator(errorData) {
@@ -1064,17 +1604,23 @@
 
             // Create error indicator
             const indicator = document.createElement('div');
-            indicator.className = 'error-indicator';
+            indicator.className = 'error-indicator animated-error';
             indicator.textContent = '!';
             indicator.style.left = 'calc(50% - 12px)';
             indicator.style.top = 'calc(50% - 12px)';
 
             document.querySelector('.network-visualization').appendChild(indicator);
+            
+            showNotification('Error detected in transmission!', 'error');
 
             // Remove after some time
             setTimeout(() => {
                 indicator.remove();
             }, 5000);
+            
+            // Update progress bar
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = '60%';
         }
 
         // New function to update charts
@@ -1349,6 +1895,13 @@
 
             // Update charts
             updateCharts(data);
+            
+            // Update progress bar
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = '80%';
+            
+            // Show notification for performance update
+            showNotification(`${data.crcType} performance metrics updated`, 'info');
         }
 
         // Add log message
@@ -1364,6 +1917,10 @@
             }
 
             logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            
+            // Add animation
+            logEntry.style.animation = 'slideIn 0.3s ease';
+            
             logContainer.appendChild(logEntry);
             logContainer.scrollTop = logContainer.scrollHeight;
         }
@@ -1420,6 +1977,10 @@
             // Clear logs
             document.getElementById('logs').innerHTML = '';
             addLog('Previous data cleared. New simulation started.', 'success');
+            
+            // Reset progress bar
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = '0%';
         }
 
         // Button event handlers
@@ -1468,6 +2029,107 @@
         window.addEventListener('load', function() {
             console.log('Page loaded, checking error panel elements:');
             checkErrorPanelElements();
+        });
+
+        // Add new interactive features
+        document.addEventListener('DOMContentLoaded', function() {
+            // Theme switcher - now just a placeholder since we're using dark theme only
+            const themeSwitcher = document.getElementById('theme-switcher');
+            const body = document.body;
+            
+            // Set dark theme by default
+            body.classList.add('dark-theme');
+            
+            // Change the icon to sun since we're in dark mode
+            const icon = themeSwitcher.querySelector('i');
+            icon.classList.remove('fa-moon');
+            icon.classList.add('fa-sun');
+            
+            // Disable theme switcher functionality
+            themeSwitcher.style.cursor = 'not-allowed';
+            themeSwitcher.style.opacity = '0.5';
+            
+            // Help modal
+            const helpIcon = document.getElementById('help-icon');
+            const helpModal = document.getElementById('help-modal');
+            const modalClose = document.querySelector('.modal-close');
+            
+            helpIcon.addEventListener('click', function() {
+                helpModal.style.display = 'flex';
+            });
+            
+            modalClose.addEventListener('click', function() {
+                helpModal.style.display = 'none';
+            });
+            
+            window.addEventListener('click', function(event) {
+                if (event.target === helpModal) {
+                    helpModal.style.display = 'none';
+                }
+            });
+            
+            // Zoom controls
+            const zoomIn = document.getElementById('zoom-in');
+            const zoomOut = document.getElementById('zoom-out');
+            const resetView = document.getElementById('reset-view');
+            const container = document.querySelector('.container');
+            
+            let currentZoom = 1;
+            
+            zoomIn.addEventListener('click', function() {
+                currentZoom += 0.1;
+                container.style.transform = `scale(${currentZoom})`;
+                container.style.transformOrigin = 'top left';
+                showNotification('Zoomed in', 'info');
+            });
+            
+            zoomOut.addEventListener('click', function() {
+                if (currentZoom > 0.5) {
+                    currentZoom -= 0.1;
+                    container.style.transform = `scale(${currentZoom})`;
+                    container.style.transformOrigin = 'top left';
+                    showNotification('Zoomed out', 'info');
+                }
+            });
+            
+            resetView.addEventListener('click', function() {
+                currentZoom = 1;
+                container.style.transform = 'scale(1)';
+                showNotification('View reset', 'info');
+            });
+            
+            // Progress bar
+            const progressBar = document.getElementById('progress-bar');
+            
+            // Notification system
+            window.showNotification = function(message, type = 'success') {
+                const notification = document.getElementById('notification');
+                notification.textContent = message;
+                notification.className = 'notification show ' + type;
+                
+                setTimeout(function() {
+                    notification.classList.remove('show');
+                }, 3000);
+            };
+            
+            // Add tooltips to buttons
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => {
+                const tooltip = document.createElement('div');
+                tooltip.className = 'tooltip-content';
+                
+                if (button.id === 'startSimulation') {
+                    tooltip.textContent = 'Start a new CRC simulation';
+                } else if (button.id === 'clearLogs') {
+                    tooltip.textContent = 'Clear all log entries';
+                }
+                
+                button.classList.add('tooltip-trigger');
+                button.appendChild(tooltip);
+            });
+            
+            // Initialize progress bar
+            progressBar.style.width = '0%';
         });
     </script>
 </body>
