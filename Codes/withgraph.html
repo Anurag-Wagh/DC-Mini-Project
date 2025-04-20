@@ -634,28 +634,28 @@
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
-        
+
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
-        
+
         @keyframes slideIn {
             from { transform: translateY(20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
-        
+
         @keyframes glow {
             0% { box-shadow: 0 0 5px rgba(52, 152, 219, 0.5); }
             50% { box-shadow: 0 0 20px rgba(52, 152, 219, 0.8); }
             100% { box-shadow: 0 0 5px rgba(52, 152, 219, 0.5); }
         }
-        
+
         @keyframes rotate {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
-        
+
         .theme-switcher {
             position: fixed;
             top: 20px;
@@ -668,41 +668,41 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
+
         .theme-switcher:hover {
             transform: scale(1.1);
         }
-        
+
         .theme-switcher i {
             font-size: 24px;
             color: #3498db;
         }
-        
+
         .dark-theme {
             background-color: #1a1a2e;
             color: #e6e6e6;
         }
-        
+
         .dark-theme .container {
             background-color: #16213e;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
-        
+
         .dark-theme .crc-panel {
             background: linear-gradient(135deg, #16213e, #0f3460);
             border-color: #533483;
         }
-        
+
         .dark-theme .bit-0 {
             background: linear-gradient(135deg, #533483, #e94560);
             color: white;
         }
-        
+
         .dark-theme .bit-1 {
             background: linear-gradient(135deg, #e94560, #533483);
             color: white;
         }
-        
+
         .interactive-tooltip {
             position: absolute;
             background: rgba(0, 0, 0, 0.8);
@@ -716,7 +716,7 @@
             max-width: 250px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
-        
+
         .interactive-tooltip::after {
             content: '';
             position: absolute;
@@ -727,7 +727,7 @@
             border-style: solid;
             border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
         }
-        
+
         .floating-controls {
             position: fixed;
             bottom: 20px;
@@ -737,7 +737,7 @@
             gap: 10px;
             z-index: 1000;
         }
-        
+
         .floating-button {
             width: 50px;
             height: 50px;
@@ -751,16 +751,16 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             transition: all 0.3s ease;
         }
-        
+
         .floating-button:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 25px rgba(0,0,0,0.3);
         }
-        
+
         .floating-button i {
             font-size: 20px;
         }
-        
+
         .progress-indicator {
             position: fixed;
             top: 0;
@@ -770,7 +770,7 @@
             z-index: 1001;
             transition: width 0.3s ease;
         }
-        
+
         .notification {
             position: fixed;
             top: 20px;
@@ -787,23 +787,23 @@
             max-width: 80%;
             text-align: center;
         }
-        
+
         .notification.show {
             opacity: 1;
         }
-        
+
         .notification.error {
             background: #e74c3c;
         }
-        
+
         .notification.warning {
             background: #f39c12;
         }
-        
+
         .notification.info {
             background: #3498db;
         }
-        
+
         .modal {
             display: none;
             position: fixed;
@@ -816,7 +816,7 @@
             justify-content: center;
             align-items: center;
         }
-        
+
         .modal-content {
             background: white;
             padding: 25px;
@@ -828,7 +828,7 @@
             position: relative;
             animation: slideIn 0.3s ease;
         }
-        
+
         .modal-close {
             position: absolute;
             top: 10px;
@@ -838,20 +838,20 @@
             color: #aaa;
             transition: color 0.3s ease;
         }
-        
+
         .modal-close:hover {
             color: #333;
         }
-        
+
         .dark-theme .modal-content {
             background: #16213e;
             color: #e6e6e6;
         }
-        
+
         .dark-theme .modal-close:hover {
             color: #e6e6e6;
         }
-        
+
         .help-icon {
             position: fixed;
             bottom: 20px;
@@ -869,37 +869,37 @@
             transition: all 0.3s ease;
             z-index: 1000;
         }
-        
+
         .help-icon:hover {
             transform: scale(1.1);
             background: #2980b9;
         }
-        
+
         .help-icon i {
             font-size: 24px;
         }
-        
+
         .bit-position-box {
             transition: all 0.3s ease;
         }
-        
+
         .bit-position-box:hover {
             transform: scale(1.2);
             box-shadow: 0 0 15px rgba(255, 68, 68, 0.7);
         }
-        
+
         .animated-node {
             animation: pulse 2s infinite;
         }
-        
+
         .animated-packet {
             animation: glow 2s infinite;
         }
-        
+
         .animated-error {
             animation: pulse 1s infinite;
         }
-        
+
         .loading-spinner {
             display: inline-block;
             width: 30px;
@@ -910,17 +910,17 @@
             animation: rotate 1s ease-in-out infinite;
             margin-right: 10px;
         }
-        
+
         .tooltip-trigger {
             position: relative;
             display: inline-block;
         }
-        
+
         .tooltip-trigger:hover .tooltip-content {
             opacity: 1;
             visibility: visible;
         }
-        
+
         .tooltip-content {
             position: absolute;
             bottom: 100%;
@@ -937,7 +937,7 @@
             transition: all 0.3s ease;
             z-index: 1000;
         }
-        
+
         .tooltip-content::after {
             content: '';
             position: absolute;
@@ -1115,7 +1115,7 @@
             <div class="help-content">
                 <h3>What is CRC?</h3>
                 <p>Cyclic Redundancy Check (CRC) is an error-detecting code commonly used to detect accidental changes to raw data during transmission or storage.</p>
-                
+
                 <h3>How to Use This Simulation</h3>
                 <ol>
                     <li>Click "Start New Simulation" to begin</li>
@@ -1123,7 +1123,7 @@
                     <li>Choose whether to inject an error</li>
                     <li>Observe how different CRC types detect errors</li>
                 </ol>
-                
+
                 <h3>Understanding the Visualization</h3>
                 <ul>
                     <li><strong>Original Message:</strong> The data you entered</li>
@@ -1131,7 +1131,7 @@
                     <li><strong>Error Info Panel:</strong> Shows details about any injected errors</li>
                     <li><strong>Performance Metrics:</strong> Compares different CRC types</li>
                 </ul>
-                
+
                 <h3>Tips</h3>
                 <ul>
                     <li>Try different messages to see how CRC performance varies</li>
@@ -1272,7 +1272,7 @@
                 statusElement.style.color = '#2ecc71';
                 addLog('Connected to simulation server', 'success');
                 showNotification('Connected to simulation server', 'success');
-                
+
                 statusElement.style.animation = 'pulse 1s';
                 setTimeout(() => {
                     statusElement.style.animation = '';
@@ -1423,13 +1423,13 @@
             if (data.nodes && data.nodes.length >= 2) {
                 const senderNode = document.getElementById('sender-node');
                 const receiverNode = document.getElementById('receiver-node');
-                
+
                 document.getElementById('sender-ip').textContent = data.nodes[0].ip;
                 document.getElementById('receiver-ip').textContent = data.nodes[1].ip;
-                
+
                 senderNode.classList.add('animated-node');
                 receiverNode.classList.add('animated-node');
-                
+
                 setTimeout(() => {
                     senderNode.classList.remove('animated-node');
                     receiverNode.classList.remove('animated-node');
@@ -1440,7 +1440,7 @@
                 addLog(`Network setup: ${data.link.dataRate} link with ${data.link.delay} delay`);
                 showNotification(`Network setup: ${data.link.dataRate} link`, 'info');
             }
-            
+
             const progressBar = document.getElementById('progress-bar');
             progressBar.style.width = '20%';
         }
@@ -1498,7 +1498,7 @@
                                 posInfo.style.whiteSpace = 'nowrap';
                                 posInfo.textContent = `Bit ${globalBitPosition % 8}`;
                                 row.appendChild(posInfo);
-                                
+
                                 // Add tooltip with more details
                                 bit.title = `Error at position ${globalBitPosition} (Byte ${Math.floor(globalBitPosition/8)}, Bit ${globalBitPosition % 8})`;
                             }
@@ -1591,7 +1591,7 @@
             setTimeout(() => {
                 packet.remove();
             }, 2100);
-            
+
             // Update progress bar
             const progressBar = document.getElementById('progress-bar');
             progressBar.style.width = '40%';
@@ -1610,14 +1610,14 @@
             indicator.style.top = 'calc(50% - 12px)';
 
             document.querySelector('.network-visualization').appendChild(indicator);
-            
+
             showNotification('Error detected in transmission!', 'error');
 
             // Remove after some time
             setTimeout(() => {
                 indicator.remove();
             }, 5000);
-            
+
             // Update progress bar
             const progressBar = document.getElementById('progress-bar');
             progressBar.style.width = '60%';
@@ -1846,8 +1846,6 @@
                 <h4>Comparative Analysis</h4>
                 <p>🏆 Fastest CRC: <strong>${crcTypes[minExecutionTimeIndex]}</strong>
                    with ${executionTimes[minExecutionTimeIndex]} ns execution time</p>
-                <p>📊 Best Error Detection: <strong>${crcTypes[maxErrorDetectionRateIndex]}</strong>
-                   with ${(errorDetectionRates[maxErrorDetectionRateIndex] * 100).toFixed(2)}% detection rate</p>
                 <p>💾 Lowest Data Overhead: <strong>${crcTypes[minDataOverheadIndex]}</strong>
                    with ${dataOverheads[minDataOverheadIndex].toFixed(2)}% overhead</p>
             `;
@@ -1895,11 +1893,11 @@
 
             // Update charts
             updateCharts(data);
-            
+
             // Update progress bar
             const progressBar = document.getElementById('progress-bar');
             progressBar.style.width = '80%';
-            
+
             // Show notification for performance update
             showNotification(`${data.crcType} performance metrics updated`, 'info');
         }
@@ -1917,10 +1915,10 @@
             }
 
             logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
-            
+
             // Add animation
             logEntry.style.animation = 'slideIn 0.3s ease';
-            
+
             logContainer.appendChild(logEntry);
             logContainer.scrollTop = logContainer.scrollHeight;
         }
@@ -1977,7 +1975,7 @@
             // Clear logs
             document.getElementById('logs').innerHTML = '';
             addLog('Previous data cleared. New simulation started.', 'success');
-            
+
             // Reset progress bar
             const progressBar = document.getElementById('progress-bar');
             progressBar.style.width = '0%';
@@ -2036,53 +2034,53 @@
             // Theme switcher - now just a placeholder since we're using dark theme only
             const themeSwitcher = document.getElementById('theme-switcher');
             const body = document.body;
-            
+
             // Set dark theme by default
             body.classList.add('dark-theme');
-            
+
             // Change the icon to sun since we're in dark mode
             const icon = themeSwitcher.querySelector('i');
             icon.classList.remove('fa-moon');
             icon.classList.add('fa-sun');
-            
+
             // Disable theme switcher functionality
             themeSwitcher.style.cursor = 'not-allowed';
             themeSwitcher.style.opacity = '0.5';
-            
+
             // Help modal
             const helpIcon = document.getElementById('help-icon');
             const helpModal = document.getElementById('help-modal');
             const modalClose = document.querySelector('.modal-close');
-            
+
             helpIcon.addEventListener('click', function() {
                 helpModal.style.display = 'flex';
             });
-            
+
             modalClose.addEventListener('click', function() {
                 helpModal.style.display = 'none';
             });
-            
+
             window.addEventListener('click', function(event) {
                 if (event.target === helpModal) {
                     helpModal.style.display = 'none';
                 }
             });
-            
+
             // Zoom controls
             const zoomIn = document.getElementById('zoom-in');
             const zoomOut = document.getElementById('zoom-out');
             const resetView = document.getElementById('reset-view');
             const container = document.querySelector('.container');
-            
+
             let currentZoom = 1;
-            
+
             zoomIn.addEventListener('click', function() {
                 currentZoom += 0.1;
                 container.style.transform = `scale(${currentZoom})`;
                 container.style.transformOrigin = 'top left';
                 showNotification('Zoomed in', 'info');
             });
-            
+
             zoomOut.addEventListener('click', function() {
                 if (currentZoom > 0.5) {
                     currentZoom -= 0.1;
@@ -2091,43 +2089,43 @@
                     showNotification('Zoomed out', 'info');
                 }
             });
-            
+
             resetView.addEventListener('click', function() {
                 currentZoom = 1;
                 container.style.transform = 'scale(1)';
                 showNotification('View reset', 'info');
             });
-            
+
             // Progress bar
             const progressBar = document.getElementById('progress-bar');
-            
+
             // Notification system
             window.showNotification = function(message, type = 'success') {
                 const notification = document.getElementById('notification');
                 notification.textContent = message;
                 notification.className = 'notification show ' + type;
-                
+
                 setTimeout(function() {
                     notification.classList.remove('show');
                 }, 3000);
             };
-            
+
             // Add tooltips to buttons
             const buttons = document.querySelectorAll('button');
             buttons.forEach(button => {
                 const tooltip = document.createElement('div');
                 tooltip.className = 'tooltip-content';
-                
+
                 if (button.id === 'startSimulation') {
                     tooltip.textContent = 'Start a new CRC simulation';
                 } else if (button.id === 'clearLogs') {
                     tooltip.textContent = 'Clear all log entries';
                 }
-                
+
                 button.classList.add('tooltip-trigger');
                 button.appendChild(tooltip);
             });
-            
+
             // Initialize progress bar
             progressBar.style.width = '0%';
         });
