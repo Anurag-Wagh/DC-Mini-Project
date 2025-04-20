@@ -125,15 +125,12 @@ const uint32_t Crc32Table[256] = {
 0xBDBDF21C, 0xCABAC28A, 0x53B39330, 0x24B4A3A6, 0xBAD03605, 0xCDD70693, 0x54DE5729, 0x23D967BF,
 0xB3667A2E, 0xC4614AB8, 0x5D681B02, 0x2A6F2B94, 0xB40BBF37, 0xC30C8FA1, 0x5A05DF1B, 0x2D02EF8D
 };
-// Add these function declarations
+//  function declarations
 uint8_t ComputeCrc8(const vector<uint8_t> &data);
 uint16_t ComputeCrc16(const vector<uint8_t> &data);
 uint32_t ComputeCrc(const vector<uint8_t> &data);
 string ToBinaryString(const vector<uint8_t>& data);
 void SendToWebSocket(const string& type, const string& data);
-
-// Remove the forward declarations for the JSON helper functions
-// ... rest of the existing code ...
 
 // Function to send data to websocket server
 void SendToWebSocket(const string& type, const string& data) {
@@ -210,8 +207,8 @@ void InjectError(vector<uint8_t> &data, uint32_t &errorBit) {
     uint32_t bitPos = errorBit % 8;
     data[bytePos] ^= (1 << bitPos); // Flip the bit
 
-    NS_LOG_WARN("⚠️ Error injected at bit position: " << errorBit
-                 << " (Byte: " << bytePos << ", Bit: " << bitPos << ")");
+   /* NS_LOG_WARN("⚠️ Error injected at bit position: " << errorBit
+                 << " (Byte: " << bytePos << ", Bit: " << bitPos << ")");*/
 
     // Send error information to the web interface
     stringstream ss;
@@ -369,8 +366,7 @@ int main(int argc, char* argv[]) {
         ss << "}";
 
         SendToWebSocket("original", ss.str());
-    }
-
+}
     // Append CRC to payload
     payload.push_back((crc >> 24) & 0xFF);
     payload.push_back((crc >> 16) & 0xFF);
@@ -378,7 +374,7 @@ int main(int argc, char* argv[]) {
     payload.push_back(crc & 0xFF);
 
     uint32_t errorBit = -1;
-    if (injectErrorChoice == "yes") {
+   if (injectErrorChoice == "yes") {
         // Generate error position once for all CRC types
         random_device rd;
         mt19937 gen(rd());
